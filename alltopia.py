@@ -3,15 +3,19 @@ import pandas as pd
 import plotly.express as px
 import os
 from openai import OpenAI
+from dotenv import load_dotenv
+
+# Carregar variáveis de ambiente do arquivo .env
+load_dotenv()
 
 # Função para obter a chave API
 def get_api_key():
     # Tenta obter a chave da variável de ambiente
-    api_key = os.environ.get("sk-lBst6YNf9J77trStIIBRzWYQxyepGnzg89q7Urm-GkT3BlbkFJ08bw5fUynOG0q86PXjIiRGRxvHDdEnrA--HLRIys8A")
+    api_key = os.getenv("OPENAI_API_KEY")
     
     # Se não encontrar, verifica se está nas configurações do Streamlit
     if not api_key:
-        api_key = st.secrets.get("sk-lBst6YNf9J77trStIIBRzWYQxyepGnzg89q7Urm-GkT3BlbkFJ08bw5fUynOG0q86PXjIiRGRxvHDdEnrA--HLRIys8A")
+        api_key = st.secrets.get("OPENAI_API_KEY")
     
     # Se ainda não encontrar, pede ao usuário para inserir
     if not api_key:
