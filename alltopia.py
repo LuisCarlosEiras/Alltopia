@@ -5,8 +5,6 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 
-Authorization: Bearer OPENAI_API_KEY
-
 client = OpenAI(
   organization='proj_ej8XirjgLpIcNjIYYioYc8Wg',
   project='Utopias',
