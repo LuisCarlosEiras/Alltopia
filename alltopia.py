@@ -4,9 +4,6 @@ import plotly.express as px
 import os
 from openai import OpenAI
 
-# Configure sua chave de API da OpenAI
-openai.api_key = 'sk-lBst6YNf9J77trStIIBRzWYQxyepGnzg89q7Urm-GkT3BlbkFJ08bw5fUynOG0q86PXjIiRGRxvHDdEnrA--HLRIys8A'
-
 # Função para obter a chave API
 def get_api_key():
     # Tenta obter a chave da variável de ambiente
