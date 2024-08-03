@@ -5,6 +5,13 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 
+Authorization: Bearer OPENAI_API_KEY
+
+client = OpenAI(
+  organization='proj_afSuRm9kQlTxjJKzwBHq6c8B',
+  project='Alltopia',
+)
+
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
