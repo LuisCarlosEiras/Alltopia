@@ -6,7 +6,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 client = OpenAI(
-  organization='proj_ej8XirjgLpIcNjIYYioYc8Wg',
+  organization='proj_kT4GTGsdZR9ZTUZzITk9AGrS',
   project='Utopias',
 )
 
