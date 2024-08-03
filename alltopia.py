@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 
 # Configure sua chave de API da OpenAI
-client = OpenAI(api_key='sua_chave_api_aqui')
+client = OpenAI(api_key='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')
 
 # Características de uma sociedade utópica
 caracteristicas = [
@@ -20,7 +20,44 @@ caracteristicas = [
     "Felicidade e Realização Pessoal"
 ]
 
-# ... [O restante do código CSS permanece o mesmo]
+# Estilo CSS para o título, subtítulos e imagem centralizada
+st.markdown("""
+    <style>
+    .full-width-title {
+        text-align: center;
+        padding: 20px;
+        background-color: #f0f2f6;
+        color: #262730;
+        font-size: 40px;
+        font-weight: bold;
+        margin-bottom: 30px;
+    }
+    .subtitle {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .full-width-section {
+        padding: 20px;
+        background-color: #f0f2f6;
+        margin-top: 30px;
+    }
+    .centered-image {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px 0;
+    }
+    .centered-image img {
+        max-width: 50%;
+        height: auto;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# Título em largura total
+st.markdown('<p class="full-width-title">Alltopia: Crie a sua sociedade perfeita</p>', unsafe_allow_html=True)
 
 # Função para analisar a sociedade com base nos valores ajustados
 def analisar_sociedade(valores):
@@ -35,7 +72,39 @@ def analisar_sociedade(valores):
     
     return media, analise
 
-# ... [O código para a interface do usuário permanece o mesmo]
+# Inicializar o dicionário de valores
+valores = {caracteristica: 5.0 for caracteristica in caracteristicas}
+
+# Dividir a tela em duas colunas do mesmo tamanho
+col1, col2 = st.columns(2)
+
+# Criação de sliders para cada característica na coluna da esquerda
+with col1:
+    st.markdown('<p class="subtitle">Escolha as características</p>', unsafe_allow_html=True)
+    for caracteristica in caracteristicas:
+        valores[caracteristica] = st.slider(caracteristica, 0.0, 10.0, 5.0)
+
+# Exibir o gráfico de barras na coluna da direita
+with col2:
+    st.markdown('<p class="subtitle">Valores das Características</p>', unsafe_allow_html=True)
+    
+    # Criar um DataFrame para o gráfico
+    df = pd.DataFrame(list(valores.items()), columns=['Característica', 'Valor'])
+    
+    # Definir uma paleta de cores personalizada
+    color_palette = px.colors.qualitative.Prism
+
+    # Criar o gráfico de barras usando Plotly Express com cores diferentes
+    fig = px.bar(df, x='Característica', y='Valor', 
+                 labels={'Valor': 'Pontuação', 'Característica': ''},
+                 height=400,
+                 color='Característica',
+                 color_discrete_sequence=color_palette)
+    
+    fig.update_layout(xaxis_tickangle=-45, showlegend=False)
+    
+    # Exibir o gráfico
+    st.plotly_chart(fig, use_container_width=True)
 
 # Analisar a sociedade
 media, analise = analisar_sociedade(valores)
