@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 Authorization: Bearer OPENAI_API_KEY
 
 client = OpenAI(
-  organization='proj_afSuRm9kQlTxjJKzwBHq6c8B',
+  organization='proj_G76xvoFUQOcwjdfkwoFwFdQg',
   project='Alltopias',
 )
 
