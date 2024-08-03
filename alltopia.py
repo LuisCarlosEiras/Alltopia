@@ -9,7 +9,7 @@ Authorization: Bearer OPENAI_API_KEY
 
 client = OpenAI(
   organization='proj_afSuRm9kQlTxjJKzwBHq6c8B',
-  project='Alltopia',
+  project='Alltopias',
 )
 
 # Carregar variáveis de ambiente do arquivo .env
