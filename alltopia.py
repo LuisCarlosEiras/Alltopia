@@ -8,8 +8,8 @@ from dotenv import load_dotenv
 Authorization: Bearer OPENAI_API_KEY
 
 client = OpenAI(
-  organization='proj_G76xvoFUQOcwjdfkwoFwFdQg',
-  project='Alltopias',
+  organization='proj_ej8XirjgLpIcNjIYYioYc8Wg',
+  project='Utopias',
 )
 
 # Carregar variáveis de ambiente do arquivo .env
