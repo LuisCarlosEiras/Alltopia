@@ -11,7 +11,7 @@ def get_api_key():
     
     # Se não encontrar, verifica se está nas configurações do Streamlit
     if not api_key:
-        api_key = st.secrets.get("OPENAI_API_KEY")
+        api_key = st.secrets.get("sk-lBst6YNf9J77trStIIBRzWYQxyepGnzg89q7Urm-GkT3BlbkFJ08bw5fUynOG0q86PXjIiRGRxvHDdEnrA--HLRIys8A")
     
     # Se ainda não encontrar, pede ao usuário para inserir
     if not api_key:
