@@ -4,12 +4,33 @@ import plotly.express as px
 import os
 from openai import OpenAI
 
-# Configurar a chave de API da OpenAI usando variável de ambiente
-api_key = os.environ.get('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')
+# Função para obter a chave API
+def get_api_key():
+    # Tenta obter a chave da variável de ambiente
+    api_key = os.environ.get("OPENAI_API_KEY")
+    
+    # Se não encontrar, verifica se está nas configurações do Streamlit
+    if not api_key:
+        api_key = st.secrets.get("OPENAI_API_KEY")
+    
+    # Se ainda não encontrar, pede ao usuário para inserir
+    if not api_key:
+        api_key = st.text_input("Digite sua chave API da OpenAI:", type="password")
+        if api_key:
+            st.success("Chave API inserida com sucesso!")
+        else:
+            st.warning("Por favor, insira sua chave API da OpenAI para continuar.")
+    
+    return api_key
+
+# Obter a chave API
+api_key = get_api_key()
+
+# Se não houver chave API, para a execução
 if not api_key:
-    st.error("Chave da API OpenAI não encontrada. Por favor, configure a variável de ambiente OPENAI_API_KEY.")
     st.stop()
 
+# Inicializar o cliente OpenAI
 try:
     client = OpenAI(api_key=api_key)
 except Exception as e:
