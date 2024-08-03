@@ -5,7 +5,7 @@ import os
 from openai import OpenAI
 
 # Configurar a chave de API da OpenAI usando variável de ambiente
-api_key = os.environ.get("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")
+api_key = os.environ.get('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')
 if not api_key:
     st.error("Chave da API OpenAI não encontrada. Por favor, configure a variável de ambiente OPENAI_API_KEY.")
     st.stop()
