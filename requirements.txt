@@ -1,4 +1,4 @@
 streamlit
-openai
+pip install --upgrade openai
 pandas
 plotly
