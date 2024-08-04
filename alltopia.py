@@ -52,7 +52,6 @@ st.markdown("""
     }
     .full-width-section {
         padding: 20px;
-        # background-color: #f0f2f6;
         margin-top: 30px;
     }
     .centered-image {
