@@ -19,6 +19,54 @@ caracteristicas = [
 
 # Estilo CSS para o título, subtítulos e imagem centralizada
 st.markdown("""
+
+import streamlit as st
+
+st.markdown("""
+    <style>
+    .full-width-title {
+        font-size: 50px;
+        font-weight: bold;
+        text-align: center;
+        color: #0066cc;
+        padding: 20px 0;
+        margin: 0;
+        width: 100%;
+        background-color: #f0f8ff;
+    }
+    .subtitle {
+        font-size: 24px;
+        text-align: center;
+        color: #333333;
+        margin-top: -20px;
+        padding-bottom: 20px;
+        background-color: #f0f8ff;
+    }
+    div.stButton > button:first-child {
+        background-color: #0066cc;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        padding: 14px 20px;
+        border-radius: 10px;
+        border: 2px solid #0066cc;
+        transition: all 0.3s;
+    }
+    div.stButton > button:first-child:hover {
+        background-color: #0052a3;
+        border-color: #0052a3;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Título em largura total
+st.markdown('<p class="full-width-title">Alltopia, o game</p>', unsafe_allow_html=True)
+
+# Subtítulo
+st.markdown('<p class="subtitle">crie a sua sociedade perfeita</p>', unsafe_allow_html=True)
+
+if st.button("Analise sua sociedade com OpenAI"):
+    # Seu código aqui
     <style>
     .full-width-title {
         text-align: center;
