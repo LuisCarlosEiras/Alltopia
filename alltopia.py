@@ -165,7 +165,7 @@ if st.button("Analisar com OpenAI"):
             
             # Exibir a imagem centralizada
             st.markdown('<div class="centered-image">', unsafe_allow_html=True)
-            st.image(image_url, use_column_width=False)
+            st.image(image_url, width=716) # use_column_width=False)
             st.markdown('</div>', unsafe_allow_html=True)
             
             st.subheader("Análise da Sociedade pelo OpenAI")
