@@ -103,7 +103,7 @@ with col1:
 
 # Exibir o gráfico de barras na coluna da direita
 with col2:
-    st.markdown('<p class="subtitle">Valores das Características</p>', unsafe_allow_html=True)
+    st.markdown('<p class="subtitle">Valores das características</p>', unsafe_allow_html=True)
     
     # Criar um DataFrame para o gráfico
     df = pd.DataFrame(list(valores.items()), columns=['Característica', 'Valor'])
