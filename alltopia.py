@@ -54,7 +54,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # Título em largura total
-st.markdown('<p class="full-width-title">Alltopia: Crie a sua sociedade perfeita</p>', unsafe_allow_html=True)
+st.markdown('<p class="full-width-title">Alltopia: crie a sua sociedade perfeita</p>', unsafe_allow_html=True)
 
 # Função para analisar a sociedade com base nos valores ajustados
 def analisar_sociedade(valores):
@@ -150,7 +150,7 @@ if st.button("Analisar com OpenAI"):
                 max_tokens=150,
                 n=1,
                 stop=None,
-                temperature=0.7
+                temperature=1.0
             )
             image_prompt = image_prompt_response.choices[0].text.strip()
             
