@@ -20,12 +20,6 @@ caracteristicas = [
 # Estilo CSS para o título, subtítulos e imagem centralizada
 st.markdown("""
 
-import streamlit as st
-
-st.markdown("""
-
-import streamlit as st
-
 # Definindo o estilo CSS
 css = '''
 <style>
@@ -61,8 +55,6 @@ css = '''
         background-color: #0052a3;
         border-color: #0052a3;
     }
-</style>
-'''
 
 # Aplicando o estilo CSS
 st.markdown(css, unsafe_allow_html=True)
@@ -75,21 +67,8 @@ st.markdown('<p class="subtitle">crie a sua sociedade perfeita</p>', unsafe_allo
 
 # Botão de análise
 if st.button("Analise sua sociedade com OpenAI"):
-    # Seu código aqui
-    pass
-            
-    
-   
-# Título em largura total
-st.markdown('<p class="full-width-title">Alltopia, o game</p>', unsafe_allow_html=True)
-
-# Subtítulo
-st.markdown('<p class="subtitle">crie a sua sociedade perfeita</p>', unsafe_allow_html=True)
-
-if st.button("Analise sua sociedade com OpenAI"):
-    # Seu código aqui
-    <style>
-    .full-width-title {
+  
+     .full-width-title {
         text-align: center;
         padding: 20px;
         background-color: #f0f2f6;
