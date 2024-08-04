@@ -19,7 +19,7 @@ caracteristicas = [
 
 # Estilo CSS para o título, subtítulos e imagem centralizada
 st.markdown("""
-css = '''
+
 <style>
     .full-width-title {
         font-size: 50px;
@@ -61,7 +61,7 @@ st.markdown(css, unsafe_allow_html=True)
 st.markdown('<p class="full-width-title">Alltopia, o game</p>', unsafe_allow_html=True)
 
 # Subtítulo
-st.markdown('<p class="subtitle">crie a sua sociedade perfeita</p>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">Crie a sua sociedade perfeita</p>', unsafe_allow_html=True)
 
 # Botão de análise
 if st.button("Analise sua sociedade com OpenAI"):
