@@ -19,8 +19,6 @@ caracteristicas = [
 
 # Estilo CSS para o título, subtítulos e imagem centralizada
 st.markdown("""
-
-# Definindo o estilo CSS
 css = '''
 <style>
     .full-width-title {
