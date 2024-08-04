@@ -39,7 +39,7 @@ st.markdown("""
         # background-color: #f0f8ff;
     }
     div.stButton > button:first-child {
-        background-color: #0066cc;
+        # background-color: #0066cc;
         color: white;
         font-size: 20px;
         font-weight: bold;
