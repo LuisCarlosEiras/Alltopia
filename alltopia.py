@@ -125,7 +125,7 @@ media, analise = analisar_sociedade(valores)
 
 # Seção de análise em largura total
 st.markdown('<div class="full-width-section">', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">Análise da Sociedade Resultante</p>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">Análise da sua utopia</p>', unsafe_allow_html=True)
 st.write(f"Média dos Valores: {media:.2f}")
 st.write(f"Classificação: {analise}")
 
