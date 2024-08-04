@@ -29,6 +29,20 @@ st.markdown("""
         font-weight: bold;
         margin-bottom: 30px;
     }
+    div.stButton > button:first-child {
+        background-color: #0066cc;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        padding: 14px 20px;
+        border-radius: 10px;
+        border: 2px solid #0066cc;
+        transition: all 0.3s;
+    }
+    div.stButton > button:first-child:hover {
+        background-color: #0052a3;
+        border-color: #0052a3;
+    }
     .subtitle {
         text-align: center;
         font-size: 24px;
@@ -135,7 +149,7 @@ if st.button("Analise sua sociedade com OpenAI"):
                 max_tokens=1000,
                 n=1,
                 stop=None,
-                temperature=0.7
+                temperature=1.0
             )
             analysis = response.choices[0].text.strip()
             
@@ -168,7 +182,7 @@ if st.button("Analise sua sociedade com OpenAI"):
             st.image(image_url, width=716) # use_column_width=False)
             st.markdown('</div>', unsafe_allow_html=True)
             
-            st.subheader("Análise da Sociedade pelo OpenAI")
+            st.subheader("Análise da sua utopia pelo OpenAI")
             
             # Dividir a análise em parágrafos e subtítulos
             paragrafos = analysis.split('\n\n')
