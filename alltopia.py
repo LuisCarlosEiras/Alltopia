@@ -28,7 +28,7 @@ st.markdown("""
         padding: 20px 0;
         margin: 0;
         width: 100%;
-        background-color: #f0f8ff;
+        # background-color: #f0f8ff;
     }
     .subtitle {
         font-size: 24px;
@@ -36,7 +36,7 @@ st.markdown("""
         color: #333333;
         margin-top: -20px;
         padding-bottom: 20px;
-        background-color: #f0f8ff;
+        # background-color: #f0f8ff;
     }
     div.stButton > button:first-child {
         background-color: #0066cc;
