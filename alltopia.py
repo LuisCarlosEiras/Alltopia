@@ -117,7 +117,7 @@ def get_openai_api_key():
     return st.secrets["OPENAI_API_KEY"]
 
 # Análise usando o modelo de linguagem natural da OpenAI
-if st.button("Analisar com OpenAI"):
+if st.button("Analise sua sociedade com OpenAI"):
     api_key = get_openai_api_key()
     if not api_key:
         st.error("Chave API da OpenAI não encontrada. Por favor, configure a chave nas configurações do Streamlit.")
