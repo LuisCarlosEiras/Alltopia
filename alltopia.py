@@ -23,7 +23,12 @@ st.markdown("""
 import streamlit as st
 
 st.markdown("""
-    <style>
+
+import streamlit as st
+
+# Definindo o estilo CSS
+css = '''
+<style>
     .full-width-title {
         font-size: 50px;
         font-weight: bold;
@@ -56,6 +61,24 @@ st.markdown("""
         background-color: #0052a3;
         border-color: #0052a3;
     }
+</style>
+'''
+
+# Aplicando o estilo CSS
+st.markdown(css, unsafe_allow_html=True)
+
+# Título em largura total
+st.markdown('<p class="full-width-title">Alltopia, o game</p>', unsafe_allow_html=True)
+
+# Subtítulo
+st.markdown('<p class="subtitle">crie a sua sociedade perfeita</p>', unsafe_allow_html=True)
+
+# Botão de análise
+if st.button("Analise sua sociedade com OpenAI"):
+    # Seu código aqui
+    pass
+            
+    
    
 # Título em largura total
 st.markdown('<p class="full-width-title">Alltopia, o game</p>', unsafe_allow_html=True)
