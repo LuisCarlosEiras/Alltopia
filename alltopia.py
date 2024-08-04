@@ -19,7 +19,6 @@ caracteristicas = [
 
 # Estilo CSS para o título, subtítulos e imagem centralizada
 st.markdown("""
-
 <style>
     .full-width-title {
         font-size: 50px;
@@ -53,48 +52,6 @@ st.markdown("""
         background-color: #0052a3;
         border-color: #0052a3;
     }
-
-# Aplicando o estilo CSS
-st.markdown(css, unsafe_allow_html=True)
-
-# Título em largura total
-st.markdown('<p class="full-width-title">Alltopia, o game</p>', unsafe_allow_html=True)
-
-# Subtítulo
-st.markdown('<p class="subtitle">Crie a sua sociedade perfeita</p>', unsafe_allow_html=True)
-
-# Botão de análise
-if st.button("Analise sua sociedade com OpenAI"):
-  
-     .full-width-title {
-        text-align: center;
-        padding: 20px;
-        background-color: #f0f2f6;
-        color: #262730;
-        font-size: 40px;
-        font-weight: bold;
-        margin-bottom: 30px;
-    }
-    div.stButton > button:first-child {
-        background-color: #0066cc;
-        color: white;
-        font-size: 20px;
-        font-weight: bold;
-        padding: 14px 20px;
-        border-radius: 10px;
-        border: 2px solid #0066cc;
-        transition: all 0.3s;
-    }
-    div.stButton > button:first-child:hover {
-        background-color: #0052a3;
-        border-color: #0052a3;
-    }
-    .subtitle {
-        text-align: center;
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 20px;
-    }
     .full-width-section {
         padding: 20px;
         background-color: #f0f2f6;
@@ -110,11 +67,14 @@ if st.button("Analise sua sociedade com OpenAI"):
         max-width: 50%;
         height: auto;
     }
-    </style>
-    """, unsafe_allow_html=True)
+</style>
+""", unsafe_allow_html=True)
 
 # Título em largura total
-st.markdown('<p class="full-width-title">Alltopia: crie a sua sociedade perfeita</p>', unsafe_allow_html=True)
+st.markdown('<p class="full-width-title">Alltopia, o game</p>', unsafe_allow_html=True)
+
+# Subtítulo
+st.markdown('<p class="subtitle">Crie sua sociedade perfeita</p>', unsafe_allow_html=True)
 
 # Função para analisar a sociedade com base nos valores ajustados
 def analisar_sociedade(valores):
@@ -225,7 +185,7 @@ if st.button("Analise sua sociedade com OpenAI"):
             
             # Exibir a imagem centralizada
             st.markdown('<div class="centered-image">', unsafe_allow_html=True)
-            st.image(image_url, width=716) # use_column_width=False)
+            st.image(image_url, width=716)
             st.markdown('</div>', unsafe_allow_html=True)
             
             st.subheader("Análise da sua utopia pelo OpenAI")
