@@ -56,9 +56,7 @@ st.markdown("""
         background-color: #0052a3;
         border-color: #0052a3;
     }
-    </style>
-""", unsafe_allow_html=True)
-
+   
 # Título em largura total
 st.markdown('<p class="full-width-title">Alltopia, o game</p>', unsafe_allow_html=True)
 
