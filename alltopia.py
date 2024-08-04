@@ -5,11 +5,6 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 
-client = OpenAI(
-  organization='proj_kT4GTGsdZR9ZTUZzITk9AGrS',
-  project='Utopias',
-)
-
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
 
