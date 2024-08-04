@@ -1,27 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import os
 from openai import OpenAI
-from dotenv import load_dotenv
-
-# Carregar variáveis de ambiente do arquivo .env
-load_dotenv()
-
-# Obter a chave API do arquivo .env
-api_key = os.getenv("OPENAI_API_KEY")
-
-# Se não houver chave API, para a execução
-if not api_key:
-    st.error("Chave API da OpenAI não encontrada. Por favor, verifique o arquivo .env.")
-    st.stop()
-
-# Inicializar o cliente OpenAI
-try:
-    client = OpenAI(api_key=api_key)
-except Exception as e:
-    st.error(f"Erro ao inicializar o cliente OpenAI: {str(e)}")
-    st.stop()
 
 # Características de uma sociedade utópica
 caracteristicas = [
@@ -132,66 +112,75 @@ st.markdown('<p class="subtitle">Análise da Sociedade Resultante</p>', unsafe_a
 st.write(f"Média dos Valores: {media:.2f}")
 st.write(f"Classificação: {analise}")
 
+# Função para obter a chave API de forma segura
+def get_openai_api_key():
+    return st.secrets["OPENAI_API_KEY"]
+
 # Análise usando o modelo de linguagem natural da OpenAI
 if st.button("Analisar com OpenAI"):
-    try:
-        input_text = (
-            f"Analise a sociedade utópica com as seguintes características: {valores}. "
-            "Escreva a análise com subtítulos e 5 parágrafos de texto, em português do Brasil."
-        )
-        response = client.completions.create(
-            model="gpt-3.5-turbo-instruct",
-            prompt=input_text,
-            max_tokens=1000,
-            n=1,
-            stop=None,
-            temperature=0.7
-        )
-        analysis = response.choices[0].text.strip()
+    api_key = get_openai_api_key()
+    if not api_key:
+        st.error("Chave API da OpenAI não encontrada. Por favor, configure a chave nas configurações do Streamlit.")
+    else:
+        try:
+            client = OpenAI(api_key=api_key)
+            
+            input_text = (
+                f"Analise a sociedade utópica com as seguintes características: {valores}. "
+                "Escreva a análise com subtítulos e 5 parágrafos de texto, em português do Brasil."
+            )
+            response = client.completions.create(
+                model="gpt-3.5-turbo-instruct",
+                prompt=input_text,
+                max_tokens=1000,
+                n=1,
+                stop=None,
+                temperature=0.7
+            )
+            analysis = response.choices[0].text.strip()
+            
+            # Gerar prompt para imagem do DALL-E
+            image_prompt_input = (
+                f"Crie uma imagem que represente uma sociedade utópica com as seguintes características: {valores}. "
+                "O prompt deve ter 3 linhas de texto, em português do Brasil."
+            )
+            image_prompt_response = client.completions.create(
+                model="gpt-3.5-turbo-instruct",
+                prompt=image_prompt_input,
+                max_tokens=150,
+                n=1,
+                stop=None,
+                temperature=0.7
+            )
+            image_prompt = image_prompt_response.choices[0].text.strip()
+            
+            # Gerar imagem automaticamente com o prompt
+            response = client.images.generate(
+                model="dall-e-3",
+                prompt=image_prompt,
+                size="1024x1024",
+                n=1,
+            )
+            image_url = response.data[0].url
+            
+            # Exibir a imagem centralizada
+            st.markdown('<div class="centered-image">', unsafe_allow_html=True)
+            st.image(image_url, use_column_width=False)
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+            st.subheader("Análise da Sociedade pelo OpenAI")
+            
+            # Dividir a análise em parágrafos e subtítulos
+            paragrafos = analysis.split('\n\n')
+            for paragrafo in paragrafos:
+                if ': ' in paragrafo:
+                    subtitulo, texto = paragrafo.split(': ', 1)
+                    st.markdown(f"**{subtitulo}**")
+                    st.write(texto)
+                else:
+                    st.write(paragrafo)
         
-        # Gerar prompt para imagem do DALL-E
-        image_prompt_input = (
-            f"Crie uma imagem que represente uma sociedade utópica com as seguintes características: {valores}. "
-            "O prompt deve ter 3 linhas de texto, em português do Brasil."
-        )
-        image_prompt_response = client.completions.create(
-            model="gpt-3.5-turbo-instruct",
-            prompt=image_prompt_input,
-            max_tokens=150,
-            n=1,
-            stop=None,
-            temperature=0.7
-        )
-        image_prompt = image_prompt_response.choices[0].text.strip()
-        
-        # Gerar imagem automaticamente com o prompt
-        response = client.images.generate(
-            model="dall-e-3",
-            prompt=image_prompt,
-            size="1024x1024",
-            n=1,
-        )
-        image_url = response.data[0].url
-        
-        # Exibir a imagem centralizada
-        st.markdown('<div class="centered-image">', unsafe_allow_html=True)
-        st.image(image_url, use_column_width=False)
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        st.subheader("Análise da Sociedade pelo OpenAI")
-        
-        # Dividir a análise em parágrafos e subtítulos
-        paragrafos = analysis.split('\n\n')
-        for paragrafo in paragrafos:
-            if ': ' in paragrafo:
-                subtitulo, texto = paragrafo.split(': ', 1)
-                st.markdown(f"**{subtitulo}**")
-                st.write(texto)
-            else:
-                st.write(paragrafo)
-    
-    except Exception as e:
-        st.error(f"Erro ao chamar a API da OpenAI: {str(e)}")
-        st.stop()
+        except Exception as e:
+            st.error(f"Erro ao chamar a API da OpenAI: {str(e)}")
 
 st.markdown('</div>', unsafe_allow_html=True)
