@@ -1,3 +1,8 @@
+import llama
+
+model = llama.LLaMAForCausalLM.from_pretrained("llama-3b")
+tokenizer = llama.LLaMATokenizer.from_pretrained("llama-3b")
+
 import streamlit as st
 import cv2
 import numpy as np
