@@ -1,24 +1,32 @@
-import streamlit as st
 import cv2
+import streamlit as st
 
-# Inicialize a câmera
-cap = cv2.VideoCapture(0)
+def main():
+    st.title("Visualizador de Câmera")
 
-# Crie um título para a aplicação
-st.title("Câmera em Tempo Real")
+    # Inicializa a câmera
+    cap = cv2.VideoCapture(0)
 
-# Crie um container para a imagem
-image_container = st.container()
+    # Cria um espaço para exibir a imagem
+    image_placeholder = st.empty()
 
-while True:
-    # Leia um frame da câmera
-    ret, frame = cap.read()
-    
-    # Converta o frame para um formato que o Streamlit possa entender
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    
-    # Exiba o frame na aplicação
-    image_container.image(frame, use_column_width=True)
-    
-    # Aguarde um pouco antes de ler o próximo frame
-    cv2.waitKey(1)
+    while True:
+        # Captura frame por frame
+        ret, frame = cap.read()
+
+        if ret:
+            # Converte a imagem de BGR para RGB
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            
+            # Exibe a imagem no Streamlit
+            image_placeholder.image(frame)
+        
+        # Adiciona um botão para parar a captura
+        if st.button('Parar'):
+            break
+
+    # Libera a câmera e fecha as janelas
+    cap.release()
+
+if __name__ == '__main__':
+    main()
