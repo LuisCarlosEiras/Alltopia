@@ -1,22 +1,50 @@
+import cv2
 import streamlit as st
-from PIL import Image
 import numpy as np
 
 def main():
-    st.title("Visualizador de Imagem")
+    st.title("Visualizador de Câmera")
 
-    # Cria um widget para upload de arquivo
-    uploaded_file = st.file_uploader("Escolha uma imagem", type=["jpg", "jpeg", "png"])
+    # Tenta inicializar a câmera
+    try:
+        cap = cv2.VideoCapture(0)
+        if not cap.isOpened():
+            st.error("Não foi possível abrir a câmera. Verifique se ela está conectada e não está sendo usada por outro aplicativo.")
+            return
+    except Exception as e:
+        st.error(f"Erro ao inicializar a câmera: {str(e)}")
+        return
 
-    if uploaded_file is not None:
-        # Lê a imagem
-        image = Image.open(uploaded_file)
+    # Cria um espaço para exibir a imagem
+    image_placeholder = st.empty()
+
+    stop_button = st.button('Parar')
+
+    while not stop_button:
+        try:
+            # Captura frame por frame
+            ret, frame = cap.read()
+
+            if ret:
+                # Converte a imagem de BGR para RGB
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                
+                # Exibe a imagem no Streamlit
+                image_placeholder.image(frame)
+            else:
+                st.warning("Não foi possível capturar o frame da câmera.")
+                break
         
-        # Converte a imagem para um array numpy
-        image_array = np.array(image)
-        
-        # Exibe a imagem no Streamlit
-        st.image(image_array, caption='Imagem carregada', use_column_width=True)
+        except Exception as e:
+            st.error(f"Erro durante a captura: {str(e)}")
+            break
+
+        # Atualiza o estado do botão
+        stop_button = st.button('Parar')
+
+    # Libera a câmera
+    cap.release()
+    st.write("Câmera desligada.")
 
 if __name__ == '__main__':
     main()
