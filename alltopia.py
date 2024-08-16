@@ -3,7 +3,7 @@ import streamlit as st
 try:
     import cv2
     import torch
-    from transformers import AutoModelForCausalLM, AutoTokenizer, LlavaProcessor
+    from transformers import AutoProcessor, LlavaForConditionalGeneration, AutoTokenizer, AutoModelForCausalLM
     import speech_recognition as sr
 except ImportError:
     st.error("Algumas bibliotecas necessárias não estão instaladas. Por favor, instale-as usando 'pip install opencv-python-headless torch transformers SpeechRecognition'")
@@ -17,9 +17,8 @@ llava_model_name = "llava-hf/llava-1.5-7b-hf"
 llama_model_name = "meta-llama/Llama-2-7b-chat-hf"
 
 try:
-    llava_model = AutoModelForCausalLM.from_pretrained(llava_model_name)
-    llava_tokenizer = AutoTokenizer.from_pretrained(llava_model_name)
-    llava_processor = LlavaProcessor.from_pretrained(llava_model_name)
+    llava_model = LlavaForConditionalGeneration.from_pretrained(llava_model_name)
+    llava_processor = AutoProcessor.from_pretrained(llava_model_name)
     
     llama_model = AutoModelForCausalLM.from_pretrained(llama_model_name)
     llama_tokenizer = AutoTokenizer.from_pretrained(llama_model_name)
