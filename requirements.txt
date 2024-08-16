@@ -4,3 +4,4 @@ torch
 transformers
 SpeechRecognition
 requests
+llama-cpp-python
