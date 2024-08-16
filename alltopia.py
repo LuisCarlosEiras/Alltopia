@@ -6,8 +6,7 @@ import speech_recognition as sr
 from io import BytesIO
 import numpy as np
 
-# Configurando a chave API (não necessariamente precisa para os modelos locais, mas aqui para caso de serviços externos)
-api_key = st.secrets["api_key"]
+api_key = st.secrets["OPENAI_API_KEY"]
 
 # Carregando os modelos
 llava_model = AutoModelForCausalLM.from_pretrained("llava-v1.6-34b")
