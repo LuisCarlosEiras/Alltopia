@@ -1,32 +1,22 @@
-import cv2
 import streamlit as st
+from PIL import Image
+import numpy as np
 
 def main():
-    st.title("Visualizador de Câmera")
+    st.title("Visualizador de Imagem")
 
-    # Inicializa a câmera
-    cap = cv2.VideoCapture(0)
+    # Cria um widget para upload de arquivo
+    uploaded_file = st.file_uploader("Escolha uma imagem", type=["jpg", "jpeg", "png"])
 
-    # Cria um espaço para exibir a imagem
-    image_placeholder = st.empty()
-
-    while True:
-        # Captura frame por frame
-        ret, frame = cap.read()
-
-        if ret:
-            # Converte a imagem de BGR para RGB
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            
-            # Exibe a imagem no Streamlit
-            image_placeholder.image(frame)
+    if uploaded_file is not None:
+        # Lê a imagem
+        image = Image.open(uploaded_file)
         
-        # Adiciona um botão para parar a captura
-        if st.button('Parar'):
-            break
-
-    # Libera a câmera e fecha as janelas
-    cap.release()
+        # Converte a imagem para um array numpy
+        image_array = np.array(image)
+        
+        # Exibe a imagem no Streamlit
+        st.image(image_array, caption='Imagem carregada', use_column_width=True)
 
 if __name__ == '__main__':
     main()
