@@ -2,7 +2,7 @@ import streamlit as st
 import cv2
 import numpy as np
 from transformers import LLaMAForSequenceClassification
-from transformers import LLaMATokenizer.
+from transformers import LLaMATokenizer
 
 # Carregue o modelo LLaMA
 tokenizer = LLaMATokenizer.from_pretrained("llama-3b")
