@@ -1,3 +1,5 @@
+!pip install --upgrade streamlit
+
 import streamlit as st
 import cv2
 
