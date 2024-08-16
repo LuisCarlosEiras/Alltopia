@@ -6,7 +6,7 @@ import speech_recognition as sr
 from io import BytesIO
 import numpy as np
 
-api_key = st.secrets["OPENAI_API_KEY"]
+api_key = st.secrets["GROQ_API_KEY"]
 
 # Carregando os modelos
 llava_model = AutoModelForCausalLM.from_pretrained("llava-v1.6-34b")
