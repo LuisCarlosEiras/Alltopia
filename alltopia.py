@@ -1,4 +1,7 @@
+
 import streamlit as st
+st.set_option('deprecation.showfileUploaderEncoding', False)
+st.set_option('runner.catch_log_msg', True)
 import cv2
 import numpy as np
 from transformers import LLaMAForSequenceClassification, LLaMATokenizer
