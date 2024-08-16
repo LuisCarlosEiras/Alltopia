@@ -1,5 +1,5 @@
 streamlit
-openai
-pandas
-plotly
-python-dotenv
+torch
+transformers
+opencv-python
+speechrecognition
