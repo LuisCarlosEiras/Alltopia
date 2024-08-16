@@ -1,5 +1,5 @@
 streamlit
 torch
 transformers
-opencv-python
+opencv-python-headless
 speechrecognition
