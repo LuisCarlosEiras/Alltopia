@@ -11,13 +11,14 @@ import base64
 import os
 from PIL import Image
 import io
+import time
 
 # Inicializar o cliente Groq
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 def resize_image(image, max_size=(800, 800)):
     img = Image.open(image)
-    img = img.convert('RGB')  # Converte para RGB
+    img = img.convert('RGB')
     img.thumbnail(max_size)
     buffered = io.BytesIO()
     img.save(buffered, format="JPEG")
@@ -26,17 +27,29 @@ def resize_image(image, max_size=(800, 800)):
 def encode_image(image_data):
     return base64.b64encode(image_data).decode('utf-8')
 
-def describe_image(image):
+def describe_image_with_retry(image, max_retries=3, initial_wait=10):
     resized_image = resize_image(image)
     base64_image = encode_image(resized_image)
-    response = client.chat.completions.create(
-        model="llama3-70b-8192",
-        messages=[
-            {"role": "system", "content": "You are an AI that describes images accurately."},
-            {"role": "user", "content": f"Describe this image in detail: data:image/jpeg;base64,{base64_image}"}
-        ]
-    )
-    return response.choices[0].message.content
+    
+    for attempt in range(max_retries):
+        try:
+            response = client.chat.completions.create(
+                model="llama3-70b-8192",
+                messages=[
+                    {"role": "system", "content": "You are an AI that describes images accurately."},
+                    {"role": "user", "content": f"Describe this image in detail: data:image/jpeg;base64,{base64_image}"}
+                ]
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            if "rate_limit_exceeded" in str(e):
+                wait_time = initial_wait * (2 ** attempt)
+                st.warning(f"Rate limit exceeded. Waiting for {wait_time} seconds before retrying...")
+                time.sleep(wait_time)
+            else:
+                raise e
+    
+    raise Exception("Max retries reached. Unable to process the image.")
 
 def chat_about_image(user_input, image_description):
     response = client.chat.completions.create(
@@ -58,7 +71,7 @@ if image:
     
     with st.spinner("Analyzing image..."):
         try:
-            image_description = describe_image(image)
+            image_description = describe_image_with_retry(image)
             st.subheader("Image Description")
             st.write(image_description)
         except Exception as e:
