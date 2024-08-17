@@ -4,8 +4,6 @@ from groq import Groq
 from PIL import Image
 import io
 import time
-import cv2
-import numpy as np
 
 # Inicializar o cliente Groq
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
@@ -17,24 +15,16 @@ def resize_image(image, max_size=(800, 800)):
     return img
 
 def describe_image_locally(image):
-    # Converte a imagem para um array numpy
-    img_array = np.array(image)
-    
-    # Converte para escala de cinza
-    gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
-    
-    # Detecta bordas
-    edges = cv2.Canny(gray, 100, 200)
-    
-    # Conta o número de bordas
-    num_edges = np.sum(edges > 0)
-    
-    # Calcula a luminosidade média
-    brightness = np.mean(gray)
-    
-    # Descrição básica
-    description = f"A imagem tem {num_edges} bordas detectadas e uma luminosidade média de {brightness:.2f}."
-    
+    # Análise básica da imagem usando PIL
+    width, height = image.size
+    colors = image.getcolors(image.size[0] * image.size[1])
+    dominant_color = max(colors, key=lambda x: x[0])[1]
+    brightness = sum(dominant_color) / 3
+
+    description = f"A imagem tem dimensões de {width}x{height} pixels. "
+    description += f"A cor dominante tem valores RGB de {dominant_color}. "
+    description += f"A luminosidade média estimada é de {brightness:.2f} (em uma escala de 0 a 255)."
+
     return description
 
 def analyze_image_with_retry(image, max_retries=3, initial_wait=10):
