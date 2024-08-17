@@ -17,6 +17,7 @@ client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 def resize_image(image, max_size=(800, 800)):
     img = Image.open(image)
+    img = img.convert('RGB')  # Converte para RGB
     img.thumbnail(max_size)
     buffered = io.BytesIO()
     img.save(buffered, format="JPEG")
