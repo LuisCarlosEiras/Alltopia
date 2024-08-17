@@ -9,15 +9,25 @@ from camera_input_live import camera_input_live
 from groq import Groq
 import base64
 import os
+from PIL import Image
+import io
 
 # Inicializar o cliente Groq
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
-def encode_image(image):
-    return base64.b64encode(image.getvalue()).decode('utf-8')
+def resize_image(image, max_size=(800, 800)):
+    img = Image.open(image)
+    img.thumbnail(max_size)
+    buffered = io.BytesIO()
+    img.save(buffered, format="JPEG")
+    return buffered.getvalue()
+
+def encode_image(image_data):
+    return base64.b64encode(image_data).decode('utf-8')
 
 def describe_image(image):
-    base64_image = encode_image(image)
+    resized_image = resize_image(image)
+    base64_image = encode_image(resized_image)
     response = client.chat.completions.create(
         model="llama3-70b-8192",
         messages=[
@@ -46,15 +56,20 @@ if image:
     st.image(image)
     
     with st.spinner("Analyzing image..."):
-        image_description = describe_image(image)
-    
-    st.subheader("Image Description")
-    st.write(image_description)
+        try:
+            image_description = describe_image(image)
+            st.subheader("Image Description")
+            st.write(image_description)
+        except Exception as e:
+            st.error(f"Error analyzing image: {str(e)}")
     
     st.subheader("Chat about the Image")
     user_input = st.text_input("Ask a question about the image:")
     
     if user_input:
         with st.spinner("Processing your question..."):
-            response = chat_about_image(user_input, image_description)
-        st.write("AI Response:", response)
+            try:
+                response = chat_about_image(user_input, image_description)
+                st.write("AI Response:", response)
+            except Exception as e:
+                st.error(f"Error processing question: {str(e)}")
