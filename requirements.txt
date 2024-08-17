@@ -2,5 +2,3 @@ streamlit
 camera-input-live
 groq
 Pillow
-opencv-python-headless
-numpy
