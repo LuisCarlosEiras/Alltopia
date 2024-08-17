@@ -1,4 +1,4 @@
-streamlit==1.28.0
-camera-input-live==0.1.1
-groq==0.4.1
-Pillow==9.5.0
+streamlit==1.23.1
+camera-input-live==0.1.0
+langchain==0.0.150
+groq==0.5.0
