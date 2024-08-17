@@ -1,17 +1,11 @@
-# import streamlit as st
-# from camera_input_live import camera_input_live
-# image = camera_input_live()
-# if image:
-#   st.image(image)
-
 import streamlit as st
 from camera_input_live import camera_input_live
 from groq import Groq
-import base64
-import os
 from PIL import Image
 import io
 import time
+import cv2
+import numpy as np
 
 # Inicializar o cliente Groq
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
@@ -20,24 +14,40 @@ def resize_image(image, max_size=(800, 800)):
     img = Image.open(image)
     img = img.convert('RGB')
     img.thumbnail(max_size)
-    buffered = io.BytesIO()
-    img.save(buffered, format="JPEG")
-    return buffered.getvalue()
+    return img
 
-def encode_image(image_data):
-    return base64.b64encode(image_data).decode('utf-8')
+def describe_image_locally(image):
+    # Converte a imagem para um array numpy
+    img_array = np.array(image)
+    
+    # Converte para escala de cinza
+    gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
+    
+    # Detecta bordas
+    edges = cv2.Canny(gray, 100, 200)
+    
+    # Conta o número de bordas
+    num_edges = np.sum(edges > 0)
+    
+    # Calcula a luminosidade média
+    brightness = np.mean(gray)
+    
+    # Descrição básica
+    description = f"A imagem tem {num_edges} bordas detectadas e uma luminosidade média de {brightness:.2f}."
+    
+    return description
 
-def describe_image_with_retry(image, max_retries=3, initial_wait=10):
+def analyze_image_with_retry(image, max_retries=3, initial_wait=10):
     resized_image = resize_image(image)
-    base64_image = encode_image(resized_image)
+    local_description = describe_image_locally(resized_image)
     
     for attempt in range(max_retries):
         try:
             response = client.chat.completions.create(
                 model="llama3-70b-8192",
                 messages=[
-                    {"role": "system", "content": "You are an AI that describes images accurately."},
-                    {"role": "user", "content": f"Describe this image in detail: data:image/jpeg;base64,{base64_image}"}
+                    {"role": "system", "content": "You are an AI that analyzes image descriptions."},
+                    {"role": "user", "content": f"Analyze this image description and provide insights: {local_description}"}
                 ]
             )
             return response.choices[0].message.content
@@ -56,7 +66,7 @@ def chat_about_image(user_input, image_description):
         model="llama3-8b-8192",
         messages=[
             {"role": "system", "content": "You are an AI assistant that can discuss images based on their descriptions."},
-            {"role": "assistant", "content": f"The image shows: {image_description}"},
+            {"role": "assistant", "content": f"The image analysis shows: {image_description}"},
             {"role": "user", "content": user_input}
         ]
     )
@@ -71,9 +81,9 @@ if image:
     
     with st.spinner("Analyzing image..."):
         try:
-            image_description = describe_image_with_retry(image)
-            st.subheader("Image Description")
-            st.write(image_description)
+            image_analysis = analyze_image_with_retry(image)
+            st.subheader("Image Analysis")
+            st.write(image_analysis)
         except Exception as e:
             st.error(f"Error analyzing image: {str(e)}")
     
@@ -83,7 +93,7 @@ if image:
     if user_input:
         with st.spinner("Processing your question..."):
             try:
-                response = chat_about_image(user_input, image_description)
+                response = chat_about_image(user_input, image_analysis)
                 st.write("AI Response:", response)
             except Exception as e:
                 st.error(f"Error processing question: {str(e)}")
