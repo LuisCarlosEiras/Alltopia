@@ -1,47 +1,46 @@
 import streamlit as st
 from camera_input_live import camera_input_live
-from groq import Groq
-from PIL import Image
-import io
+from langchain import PromptTemplate, LLMChain
+from langchain.memory import ConversationBufferMemory
+from groq import ChatGroq
 
-# Inicializar o cliente Groq
-client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+# Função para descrever a imagem usando o LLM
+def descrever_imagem(image):
+    template = open("templates/vision_assistant.md", "r").read()
+    prompt = PromptTemplate(input_variables=["input", "video_description"], template=template)
+    llm = ChatGroq(temperature=0, model_name="llama3-70b-8192")
+    memory = ConversationBufferMemory(memory_key="chat_history", input_key="input")
+    llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
 
-def resize_image(image, max_size=(800, 800)):
-    img = Image.open(image)
-    img = img.convert('RGB')
-    img.thumbnail(max_size)
-    return img
+    # Gerando a descrição da imagem
+    video_description = "Descrição da imagem capturada"
+    descricao = llm_chain.run(input=video_description)
+    return descricao
 
-def describe_image_locally(image):
-    width, height = image.size
-    description = f"A imagem tem dimensões de {width}x{height} pixels."
-    return description
+# Função para interagir com o usuário sobre a imagem
+def dialogar_sobre_imagem(user_input):
+    template2 = open("templates/vision_prompter.md", "r").read()
+    prompt2 = PromptTemplate(input_variables=["input"], template=template2)
+    llm2 = ChatGroq(temperature=0, model_name="llama3-8b-8192")
+    memory2 = ConversationBufferMemory(memory_key="chat_history", input_key="input")
+    llm_chain2 = LLMChain(llm=llm2, prompt=prompt2, memory=memory2)
 
-def analyze_image(image):
-    resized_image = resize_image(image)
-    local_description = describe_image_locally(resized_image)
-    
-    try:
-        response = client.chat.completions.create(
-            model="llama3-70b-8192",
-            messages=[
-                {"role": "system", "content": "You are an AI that analyzes image descriptions."},
-                {"role": "user", "content": f"Analyze this image description and provide insights: {local_description}"}
-            ]
-        )
-        return response.choices[0].message.content
-    except Exception as e:
-        return f"Error analyzing image: {str(e)}"
+    # Resposta ao input do usuário
+    resposta = llm_chain2.run(input=user_input)
+    return resposta
 
-st.title("Image Capture and Analysis")
-
+# Captura da imagem
 image = camera_input_live()
-
 if image:
     st.image(image)
-    
-    with st.spinner("Analyzing image..."):
-        image_analysis = analyze_image(image)
-        st.subheader("Image Analysis")
-        st.write(image_analysis)
+
+    # Descrição da imagem
+    descricao = descrever_imagem(image)
+    st.write(f"Descrição da Imagem: {descricao}")
+
+    # Caixa de entrada de texto para o usuário interagir
+    user_input = st.text_input("Digite algo sobre a imagem:")
+
+    if user_input:
+        resposta = dialogar_sobre_imagem(user_input)
+        st.write(f"Assistente: {resposta}")
