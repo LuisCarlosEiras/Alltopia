@@ -1,11 +1,10 @@
+# !pip install streamlit-camera-input-live
+
 import streamlit as st
-from streamlit_webrtc import webrtc_streamer
 
-# Create a camera input stream
-streamer = webrtc_streamer(key="camera")
+from camera_input_live import camera_input_live
 
-# Get the video frame from the stream
-frame = streamer.video_frame
+image = camera_input_live()
 
-# Display the video frame
-st.image(frame)
+if image:
+  st.image(image)
