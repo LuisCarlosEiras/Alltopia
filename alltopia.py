@@ -2,18 +2,10 @@ import streamlit as st
 from camera_input_live import camera_input_live
 import requests
 import os
-
-# Import the secrets module
-from streamlit import secrets_manager
-
-# Initialize the secrets manager
-secrets_manager.init()
-
-# Load the secrets from the secrets.toml file
-secrets = secrets_manager.get_secrets()
+from groq import Groq  
 
 # Access the GROG_API_KEY secret
-GROG_API_KEY = secrets["GROG_API_KEY"]
+GROG_API_KEY = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 image = camera_input_live()
 
