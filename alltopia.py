@@ -1,5 +1,4 @@
 import streamlit as st
-import av
 from streamlit_webrtc import webrtc_streamer
 
 # Create a camera input stream
