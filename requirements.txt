@@ -1,5 +1,6 @@
 streamlit
-streamlit_camera_input_live
+camera_input_live
 requests
-os
+Pillow
+numpy
 
