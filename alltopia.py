@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 from langchain import PromptTemplate, LLMChain
 from langchain.memory import ConversationBufferMemory
-from groq import ChatGroq
+from groq import groq
 
 # Função para capturar imagem da webcam
 def camera_input_live():
