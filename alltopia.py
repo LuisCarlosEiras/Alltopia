@@ -1,6 +1,7 @@
 import streamlit as st
+from camera_input_live import camera_input_live
 from langchain import LLMChain, PromptTemplate
-from langchain.memory import SimpleMemory  # Verifique o nome correto da classe na documentação
+from langchain.memory import SimpleMemory
 from langchain_groq import ChatGroq
 
 # Acessar a chave da API do Groq a partir dos segredos
@@ -11,7 +12,7 @@ template = open("templates/vision_assistant.md", "r").read()
 prompt = PromptTemplate(input_variables=["input", "video_description"],
                         template=template)
 llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", api_key=api_key)
-memory = SimpleMemory(memory_key="chat_history", input_key="input")  # Atualize conforme necessário
+memory = SimpleMemory(memory_key="chat_history", input_key="input")
 llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
 
 # LLM Prompter
@@ -19,11 +20,17 @@ template2 = open("templates/vision_prompter.md", "r").read()
 prompt2 = PromptTemplate(input_variables=["input"],
                          template=template2)
 llm2 = ChatGroq(temperature=0, model_name="llama3-8b-8192", api_key=api_key)
-memory2 = SimpleMemory(memory_key="chat_history", input_key="input")  # Atualize conforme necessário
+memory2 = SimpleMemory(memory_key="chat_history", input_key="input")
 llm_chain2 = LLMChain(llm=llm2, prompt=prompt2, memory=memory2)
 
 # Streamlit UI
 st.title("Vision Assistant and Prompter")
+
+# Video Capture Setup
+st.header("Video Capture")
+image = camera_input_live()
+if image:
+    st.image(image, caption="Captured Image", use_column_width=True)
 
 # Video Description Input
 st.header("Video Description")
@@ -53,8 +60,8 @@ if st.button("Run Vision Prompter"):
 
 # Chat History Display
 st.header("Chat History")
-st.write(memory.load_memory())  # Atualize conforme necessário
-st.write(memory2.load_memory())  # Atualize conforme necessário
+st.write(memory.load_memory())
+st.write(memory2.load_memory())
 
 # Save memory states to file (Optional)
 if st.button("Save Chat History"):
