@@ -1,9 +1,10 @@
 import streamlit as st
 from camera_input_live import camera_input_live
-import llama
+import requests
+import os
 
-# Inicialize o modelo Llama3-70b-8192
-llama_model = llama.LLaMAForImageCaptioning.from_pretrained("Llama3-70b-8192")
+# Carregue o segredo do arquivo secrets.toml
+GROG_API_KEY = st.secrets["GROG_API_KEY"]
 
 image = camera_input_live()
 
@@ -12,12 +13,23 @@ if image:
 
     # Adicione um botão "Pause capturing" que, quando pressionado, gera uma descrição da imagem
     if st.button("Pause capturing"):
-        # Converta a imagem para um formato que o modelo Llama possa processar
+        # Converta a imagem para um formato que a API do GROG possa processar
         img_array = np.array(image)
-        img_tensor = torch.tensor(img_array).unsqueeze(0)
+        img_bytes = BytesIO()
+        PIL.Image.fromarray(img_array).save(img_bytes, format="PNG")
+        img_bytes.seek(0)
 
-        # Gere a descrição da imagem usando o modelo Llama
-        caption = llama_model.generate(img_tensor, max_length=50)
+        # Faça uma solicitação à API do GROG para gerar a descrição da imagem
+        response = requests.post(
+            f"https://api.grog.io/v1/describe",
+            headers={"Authorization": f"Bearer {GROG_API_KEY}"},
+            files={"image": img_bytes}
+        )
 
-        # Exiba a descrição da imagem no aplicativo Streamlit
-        st.write("Image description:", caption)
+        # Verifique se a solicitação foi bem-sucedida
+        if response.status_code == 200:
+            # Exiba a descrição da imagem no aplicativo Streamlit
+            caption = response.json()["description"]
+            st.write("Image description:", caption)
+        else:
+            st.write("Error:", response.text)
