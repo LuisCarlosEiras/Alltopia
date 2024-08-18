@@ -1,5 +1,5 @@
 streamlit
-camera_input_live
+streamlit_camera_input_live
 requests
 Pillow
 numpy
