@@ -1,7 +1,7 @@
 import streamlit as st
 from langchain import LLMChain, PromptTemplate
 from langchain.memory import SimpleMemory  # Verifique o nome correto da classe na documentação
-from groq import ChatGroq
+from langchain_groq import ChatGroq
 
 # Acessar a chave da API do Groq a partir dos segredos
 api_key = st.secrets["GROQ_API_KEY"]
