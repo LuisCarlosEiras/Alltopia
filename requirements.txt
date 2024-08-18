@@ -1,3 +1,4 @@
 streamlit
 streamlit-webrtc
 langchain
+camera_input_live
