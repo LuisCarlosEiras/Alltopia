@@ -1,3 +1,5 @@
 streamlit
-streamlit-camera-input-live
-llama
+streamlit_camera_input_live
+requests
+os
+
