@@ -4,24 +4,39 @@ from langchain import PromptTemplate, LLMChain
 from langchain.memory import ConversationBufferMemory
 from groq import ChatGroq
 
+# Carregando as chaves da API do Groq
+api_key = st.secrets["GROQ_API_KEY"]
+
 # Função para descrever a imagem usando o LLM
 def descrever_imagem(image):
-    template = open("templates/vision_assistant.md", "r").read()
-    prompt = PromptTemplate(input_variables=["input", "video_description"], template=template)
-    llm = ChatGroq(temperature=0, model_name="llama3-70b-8192")
-    memory = ConversationBufferMemory(memory_key="chat_history", input_key="input")
+    # Template para a descrição da imagem
+    template = """
+    Você é um assistente visual. Descreva a imagem a seguir detalhadamente:
+    {video_description}
+    """
+    prompt = PromptTemplate(input_variables=["video_description"], template=template)
+    
+    # Configuração do modelo maior
+    llm = ChatGroq(api_key=api_key, temperature=0, model_name="llama3-70b-8192")
+    memory = ConversationBufferMemory(memory_key="chat_history", input_key="video_description")
     llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
 
     # Gerando a descrição da imagem
-    video_description = "Descrição da imagem capturada"
-    descricao = llm_chain.run(input=video_description)
+    video_description = "Imagem capturada pela câmera"
+    descricao = llm_chain.run(video_description=video_description)
     return descricao
 
 # Função para interagir com o usuário sobre a imagem
 def dialogar_sobre_imagem(user_input):
-    template2 = open("templates/vision_prompter.md", "r").read()
+    # Template para interação com o usuário
+    template2 = """
+    O usuário disse: {input}
+    Responda ao usuário com base na descrição da imagem fornecida anteriormente.
+    """
     prompt2 = PromptTemplate(input_variables=["input"], template=template2)
-    llm2 = ChatGroq(temperature=0, model_name="llama3-8b-8192")
+
+    # Configuração do modelo menor
+    llm2 = ChatGroq(api_key=api_key, temperature=0, model_name="llama3-8b-8192")
     memory2 = ConversationBufferMemory(memory_key="chat_history", input_key="input")
     llm_chain2 = LLMChain(llm=llm2, prompt=prompt2, memory=memory2)
 
