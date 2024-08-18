@@ -1,4 +1,5 @@
 streamlit==1.23.1
-camera-input-live==0.1.0
+opencv-python==4.5.5.62
 langchain==0.0.150
 groq==0.5.0
+
