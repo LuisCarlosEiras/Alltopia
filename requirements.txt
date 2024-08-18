@@ -1,2 +1,2 @@
 streamlit
-camera-input-live
+streamlit-camera-input-live
