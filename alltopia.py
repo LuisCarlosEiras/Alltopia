@@ -23,6 +23,10 @@ llm2 = ChatGroq(temperature=0, model_name="llama3-8b-8192", api_key=api_key)
 memory2 = SimpleMemory(memory_key="chat_history", input_key="input")
 llm_chain2 = LLMChain(llm=llm2, prompt=prompt2, memory=memory2)
 
+# Inicializar histórico de conversa
+if "chat_history" not in st.session_state:
+    st.session_state["chat_history"] = []
+
 # Streamlit UI
 st.title("Vision Assistant and Prompter")
 
@@ -44,6 +48,7 @@ if st.button("Run Vision Assistant"):
         response = llm_chain.run(input=input_text, video_description=video_description)
         st.write("Assistant Response:")
         st.write(response)
+        st.session_state["chat_history"].append({"input": input_text, "response": response})
     else:
         st.warning("Please provide both a video description and a query.")
 
@@ -55,18 +60,21 @@ if st.button("Run Vision Prompter"):
         response2 = llm_chain2.run(input=input_text2)
         st.write("Prompter Response:")
         st.write(response2)
+        st.session_state["chat_history"].append({"input": input_text2, "response": response2})
     else:
         st.warning("Please enter a query for the prompter.")
 
 # Chat History Display
 st.header("Chat History")
-st.write(memory.load_memory())
-st.write(memory2.load_memory())
+for i, chat in enumerate(st.session_state["chat_history"]):
+    st.write(f"**Interaction {i+1}:**")
+    st.write(f"**Input:** {chat['input']}")
+    st.write(f"**Response:** {chat['response']}")
 
 # Save memory states to file (Optional)
 if st.button("Save Chat History"):
     with open("chat_history_assistant.txt", "w") as f:
-        f.write(str(memory.load_memory()))
-    with open("chat_history_prompter.txt", "w") as f:
-        f.write(str(memory2.load_memory()))
+        for chat in st.session_state["chat_history"]:
+            f.write(f"Input: {chat['input']}\n")
+            f.write(f"Response: {chat['response']}\n\n")
     st.success("Chat histories saved successfully!")
