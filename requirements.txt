@@ -3,4 +3,4 @@ streamlit-camera-input-live
 requests
 Pillow
 numpy
-
+groq
