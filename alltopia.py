@@ -3,11 +3,14 @@ from langchain import LLMChain, PromptTemplate
 from langchain.chains import ConversationBufferMemory
 from groq import ChatGroq
 
+# Acessar a chave da API do Groq a partir dos segredos
+api_key = st.secrets["GROQ_API_KEY"]
+
 # LLM Setup
 template = open("templates/vision_assistant.md", "r").read()
 prompt = PromptTemplate(input_variables=["input", "video_description"],
                         template=template)
-llm = ChatGroq(temperature=0, model_name="llama3-70b-8192")
+llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", api_key=api_key)
 memory = ConversationBufferMemory(memory_key="chat_history",
                                   input_key="input")
 llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
@@ -16,7 +19,7 @@ llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
 template2 = open("templates/vision_prompter.md", "r").read()
 prompt2 = PromptTemplate(input_variables=["input"],
                          template=template2)
-llm2 = ChatGroq(temperature=0, model_name="llama3-8b-8192")
+llm2 = ChatGroq(temperature=0, model_name="llama3-8b-8192", api_key=api_key)
 memory2 = ConversationBufferMemory(memory_key="chat_history",
                                    input_key="input")
 llm_chain2 = LLMChain(llm=llm2, prompt=prompt2, memory=memory2)
@@ -59,6 +62,6 @@ st.write(memory2.load_memory())
 if st.button("Save Chat History"):
     with open("chat_history_assistant.txt", "w") as f:
         f.write(str(memory.load_memory()))
-    with open("chat_history_prompter.txt", "w") as f:
+    with open("chat_history_prompter.txt", "w") as f):
         f.write(str(memory2.load_memory()))
     st.success("Chat histories saved successfully!")
