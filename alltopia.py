@@ -62,6 +62,6 @@ st.write(memory2.load_memory())
 if st.button("Save Chat History"):
     with open("chat_history_assistant.txt", "w") as f:
         f.write(str(memory.load_memory()))
-    with open("chat_history_prompter.txt", "w") as f):
+    with open("chat_history_prompter.txt", "w") as f:
         f.write(str(memory2.load_memory()))
     st.success("Chat histories saved successfully!")
