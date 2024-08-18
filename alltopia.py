@@ -1,6 +1,6 @@
 import streamlit as st
 from langchain import LLMChain, PromptTemplate
-from langchain.chains import ConversationBufferMemory
+from langchain.chains import SimpleMemory  # Verifique o nome correto da classe na documentação
 from groq import ChatGroq
 
 # Acessar a chave da API do Groq a partir dos segredos
@@ -11,8 +11,7 @@ template = open("templates/vision_assistant.md", "r").read()
 prompt = PromptTemplate(input_variables=["input", "video_description"],
                         template=template)
 llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", api_key=api_key)
-memory = ConversationBufferMemory(memory_key="chat_history",
-                                  input_key="input")
+memory = SimpleMemory(memory_key="chat_history", input_key="input")  # Atualize conforme necessário
 llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
 
 # LLM Prompter
@@ -20,8 +19,7 @@ template2 = open("templates/vision_prompter.md", "r").read()
 prompt2 = PromptTemplate(input_variables=["input"],
                          template=template2)
 llm2 = ChatGroq(temperature=0, model_name="llama3-8b-8192", api_key=api_key)
-memory2 = ConversationBufferMemory(memory_key="chat_history",
-                                   input_key="input")
+memory2 = SimpleMemory(memory_key="chat_history", input_key="input")  # Atualize conforme necessário
 llm_chain2 = LLMChain(llm=llm2, prompt=prompt2, memory=memory2)
 
 # Streamlit UI
@@ -55,8 +53,8 @@ if st.button("Run Vision Prompter"):
 
 # Chat History Display
 st.header("Chat History")
-st.write(memory.load_memory())
-st.write(memory2.load_memory())
+st.write(memory.load_memory())  # Atualize conforme necessário
+st.write(memory2.load_memory())  # Atualize conforme necessário
 
 # Save memory states to file (Optional)
 if st.button("Save Chat History"):
