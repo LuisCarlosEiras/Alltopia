@@ -1,3 +1,4 @@
-streamlit
-camera-input-live
-openai
+streamlit 
+langchain 
+langchain.chains 
+groq 
