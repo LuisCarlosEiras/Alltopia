@@ -3,8 +3,17 @@ from camera_input_live import camera_input_live
 import requests
 import os
 
-# Carregue o segredo do arquivo secrets.toml
-GROG_API_KEY = st.secrets["GROG_API_KEY"]
+# Import the secrets module
+from streamlit import secrets_manager
+
+# Initialize the secrets manager
+secrets_manager.init()
+
+# Load the secrets from the secrets.toml file
+secrets = secrets_manager.get_secrets()
+
+# Access the GROG_API_KEY secret
+GROG_API_KEY = secrets["GROG_API_KEY"]
 
 image = camera_input_live()
 
