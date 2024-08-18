@@ -1,62 +1,40 @@
 import streamlit as st
-import cv2
-import numpy as np
-from langchain import PromptTemplate, LLMChain
+from camera_input_live import camera_input_live
+import os
+from langchain.llms import ChatGroq
+from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
-from groq import groq
+from langchain.chains import LLMChain
 
-# Função para capturar imagem da webcam
-def camera_input_live():
-    cap = cv2.VideoCapture(0)  # Usa a câmera padrão
-    ret, frame = cap.read()
-    cap.release()
-    if ret:
-        return frame
-    return None
+# Load the API key from Streamlit secrets
+groq_api_key = st.secrets["GROQ_API_KEY"]
 
-# Função para descrever a imagem usando o LLM
-def descrever_imagem(image):
-    template = """
-    Você é um assistente visual. Descreva a imagem a seguir detalhadamente:
-    {video_description}
-    """
-    prompt = PromptTemplate(input_variables=["video_description"], template=template)
-    llm = ChatGroq(api_key=st.secrets["GROQ_API_KEY"], temperature=0, model_name="llama3-70b-8192")
-    memory = ConversationBufferMemory(memory_key="chat_history", input_key="video_description")
-    llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
+# Set up the LLMs
+llm = ChatGroq(temperature=0, model_name="llama3-70b-8192", api_key=groq_api_key)
+memory = ConversationBufferMemory(memory_key="chat_history", input_key="input")
+template = open("templates/vision_assistant.md", "r").read()
+prompt = PromptTemplate(input_variables=["input", "video_description"], template=template)
+llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
 
-    # Gerando a descrição da imagem
-    video_description = "Imagem capturada pela câmera"
-    descricao = llm_chain.run(video_description=video_description)
-    return descricao
+# Set up the prompter LLM
+llm2 = ChatGroq(temperature=0, model_name="llama3-8b-8192", api_key=groq_api_key)
+memory2 = ConversationBufferMemory(memory_key="chat_history", input_key="input")
+template2 = open("templates/vision_prompter.md", "r").read()
+prompt2 = PromptTemplate(input_variables=["input"], template=template2)
+llm_chain2 = LLMChain(llm=llm2, prompt=prompt2, memory=memory2)
 
-# Função para interagir com o usuário sobre a imagem
-def dialogar_sobre_imagem(user_input):
-    template2 = """
-    O usuário disse: {input}
-    Responda ao usuário com base na descrição da imagem fornecida anteriormente.
-    """
-    prompt2 = PromptTemplate(input_variables=["input"], template=template2)
-    llm2 = ChatGroq(api_key=st.secrets["GROQ_API_KEY"], temperature=0, model_name="llama3-8b-8192")
-    memory2 = ConversationBufferMemory(memory_key="chat_history", input_key="input")
-    llm_chain2 = LLMChain(llm=llm2, prompt=prompt2, memory=memory2)
-
-    # Resposta ao input do usuário
-    resposta = llm_chain2.run(input=user_input)
-    return resposta
-
-# Captura da imagem
+# Capture an image from the camera
 image = camera_input_live()
-if image is not None:
-    st.image(image, channels="BGR")
+if image:
+    st.image(image)
 
-    # Descrição da imagem
-    descricao = descrever_imagem(image)
-    st.write(f"Descrição da Imagem: {descricao}")
+    # Describe the image using the vision assistant LLM
+    input_text = "Describe the image"
+    output = llm_chain.generate(input_text, video_description="Image description")
+    st.write("Image description:", output)
 
-    # Caixa de entrada de texto para o usuário interagir
-    user_input = st.text_input("Digite algo sobre a imagem:")
-
+    # Dialogue with the user about the image
+    user_input = st.text_input("Ask a question about the image")
     if user_input:
-        resposta = dialogar_sobre_imagem(user_input)
-        st.write(f"Assistente: {resposta}")
+        output = llm_chain2.generate(user_input, input=image)
+        st.write("Response:", output)
