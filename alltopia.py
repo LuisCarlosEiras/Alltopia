@@ -1,41 +1,64 @@
 import streamlit as st
-from camera_input_live import camera_input_live
-import openai  # Substitua por sua biblioteca LLM escolhida
+from langchain import LLMChain, PromptTemplate
+from langchain.chains import ConversationBufferMemory
+from groq import ChatGroq
 
-# Configurações da API OpenAI (ajuste conforme necessário)
-openai.api_key = "YOUR_API_KEY"
+# LLM Setup
+template = open("templates/vision_assistant.md", "r").read()
+prompt = PromptTemplate(input_variables=["input", "video_description"],
+                        template=template)
+llm = ChatGroq(temperature=0, model_name="llama3-70b-8192")
+memory = ConversationBufferMemory(memory_key="chat_history",
+                                  input_key="input")
+llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
 
-def describe_image(image_bytes):
-    """Gera uma descrição da imagem usando a API OpenAI.
+# LLM Prompter
+template2 = open("templates/vision_prompter.md", "r").read()
+prompt2 = PromptTemplate(input_variables=["input"],
+                         template=template2)
+llm2 = ChatGroq(temperature=0, model_name="llama3-8b-8192")
+memory2 = ConversationBufferMemory(memory_key="chat_history",
+                                   input_key="input")
+llm_chain2 = LLMChain(llm=llm2, prompt=prompt2, memory=memory2)
 
-    Args:
-        image_bytes: Bytes da imagem a ser descrita.
+# Streamlit UI
+st.title("Vision Assistant and Prompter")
 
-    Returns:
-        Uma string com a descrição da imagem.
-    """
+# Video Description Input
+st.header("Video Description")
+video_description = st.text_area("Describe the video", "")
 
-    response = openai.Image.create(
-        model="gpt-4-vision",  # Modelo GPT-4 com capacidades visuais
-        image=image_bytes,
-        prompt="Descreva a imagem em detalhes.",
-        max_tokens=100
-    )
-    return response.choices[0].text.caption
+# Vision Assistant Input and Response
+st.header("Vision Assistant")
+input_text = st.text_input("Enter your command or query for the assistant", "")
+if st.button("Run Vision Assistant"):
+    if video_description and input_text:
+        response = llm_chain.run(input=input_text, video_description=video_description)
+        st.write("Assistant Response:")
+        st.write(response)
+    else:
+        st.warning("Please provide both a video description and a query.")
 
-# Interface do Streamlit
-st.title("Descricionador de Imagens")
+# Vision Prompter Input and Response
+st.header("Vision Prompter")
+input_text2 = st.text_input("Enter your command or query for the prompter", "")
+if st.button("Run Vision Prompter"):
+    if input_text2:
+        response2 = llm_chain2.run(input=input_text2)
+        st.write("Prompter Response:")
+        st.write(response2)
+    else:
+        st.warning("Please enter a query for the prompter.")
 
-image = camera_input_live()
-if image:
-    st.image(image, caption="Imagem Capturada")
+# Chat History Display
+st.header("Chat History")
+st.write(memory.load_memory())
+st.write(memory2.load_memory())
 
-    # Converter a imagem para bytes
-    with io.BytesIO() as buffer:
-        image.save(buffer, format='JPEG')
-        image_bytes = buffer.getvalue()
-
-    # Gerar a descrição da imagem
-    description = describe_image(image_bytes)
-    st.write("**Descrição da Imagem:**")
-    st.markdown(description)
+# Save memory states to file (Optional)
+if st.button("Save Chat History"):
+    with open("chat_history_assistant.txt", "w") as f:
+        f.write(str(memory.load_memory()))
+    with open("chat_history_prompter.txt", "w") as f:
+        f.write(str(memory2.load_memory()))
+    st.success("Chat histories saved successfully!")
