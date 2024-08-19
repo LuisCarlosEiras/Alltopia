@@ -1,5 +1,5 @@
 streamlit
-camera-input-live
+streamlit-camera-input-live
 langchain
 langchain-groq
 Pillow
