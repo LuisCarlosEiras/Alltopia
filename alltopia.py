@@ -39,6 +39,7 @@ if image:
             response = llm_chain.run(image_features=image_features)
             
             # Exibe a descrição
-            st.write("Descrição da imagem:", response)
+            st.write(f"Características da imagem: {image_features}")
+
         except Exception as e:
             st.error(f"Erro ao processar a imagem: {str(e)}")
