@@ -32,14 +32,24 @@ if image:
     st.image(image)
     if st.button("Descrever imagem"):
         try:
-            # Extrai características da imagem em vez de convertê-la para base64
+            # Extrai características da imagem
             image_features = extract_image_features(image)
+            
+            # Loga as características extraídas
+            st.write(f"Características da imagem: {image_features}")
             
             # Gera a descrição da imagem
             response = llm_chain.run(image_features=image_features)
             
+            # Loga a resposta do modelo
+            st.write(f"Resposta do modelo: {response}")
+            
             # Exibe a descrição
-            st.write(f"Características da imagem: {image_features}")
+            st.write("Descrição da imagem:", response)
+            
+        except Exception as e:
+            st.error(f"Erro ao processar a imagem: {str(e)}")
+
 
         except Exception as e:
             st.error(f"Erro ao processar a imagem: {str(e)}")
