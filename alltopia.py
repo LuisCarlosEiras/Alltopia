@@ -3,6 +3,8 @@ from camera_input_live import camera_input_live
 from langchain import LLMChain, PromptTemplate
 from langchain_groq import ChatGroq
 import base64
+from PIL import Image
+import io
 
 # Configuração do modelo e da cadeia LLM
 GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
@@ -16,6 +18,13 @@ except Exception as e:
     st.error(f"Erro ao inicializar o ChatGroq: {str(e)}")
     st.stop()
 
+def process_image(image, max_size=(800, 800), quality=85):
+    img = Image.open(image)
+    img.thumbnail(max_size)
+    buf = io.BytesIO()
+    img.save(buf, format='JPEG', quality=quality)
+    return buf.getvalue()
+
 # Interface do usuário
 st.title("Descritor de Imagens")
 image = camera_input_live()
@@ -24,8 +33,11 @@ if image:
     st.image(image)
     if st.button("Descrever imagem"):
         try:
-            # Converte a imagem para base64
-            image_base64 = base64.b64encode(image.getvalue()).decode()
+            # Processa e reduz o tamanho da imagem
+            processed_image = process_image(image)
+            
+            # Converte a imagem processada para base64
+            image_base64 = base64.b64encode(processed_image).decode()
             
             # Gera a descrição da imagem
             response = llm_chain.run(image_description=image_base64)
