@@ -1,5 +1,5 @@
 import streamlit as st
-from streamlit_camera_input_live import camera_input_live
+from camera_input_live import camera_input_live
 from PIL import Image
 import io
 import base64
