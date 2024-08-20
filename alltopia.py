@@ -71,10 +71,10 @@ if image:
     
     if st.button("Descrever Imagem"):
         # Gerar a descrição da imagem usando o modelo LLM
-        def get_image_description():
+        def get_image_description(encoded_image):
             return llm_chain.run(input="Descreva essa imagem em detalhes.", image=encoded_image)
         
-        image_description = retry_with_exponential_backoff(get_image_description)
+        image_description = retry_with_exponential_backoff(lambda: get_image_description(encoded_image))
         
         # Exibir a descrição da imagem
         st.write("Descrição da imagem:")
@@ -84,10 +84,10 @@ if image:
         user_input = st.text_input("Faça uma pergunta sobre a imagem:")
         if user_input:
             # Responder à pergunta do usuário com retry
-            def get_response():
+            def get_response(encoded_image):
                 return llm_chain.run(input=user_input, image=encoded_image)
             
-            response = retry_with_exponential_backoff(get_response)
+            response = retry_with_exponential_backoff(lambda: get_response(encoded_image))
             st.write("Resposta:")
             st.write(response)
 
