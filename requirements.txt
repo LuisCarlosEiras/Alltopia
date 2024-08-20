@@ -5,4 +5,4 @@ langchain-groq
 Pillow
 opencv-python
 numpy
-libgl1-mesa-glx
+opencv-python-headless
