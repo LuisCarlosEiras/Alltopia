@@ -70,15 +70,14 @@ if image:
         # Codificar a imagem para base64
         encoded_image = encode_image(rgb_image)
         
-        # Aqui você deveria enviar a imagem para um modelo de visão computacional
-        # para obter a descrição. Vamos simular uma descrição de imagem:
+        # Simulação de descrição de imagem
         image_description = "Imagem processada com sucesso. Esta é uma descrição de exemplo."
         
         st.write("Descrição da imagem:")
         st.write(image_description)  # Certifique-se de que a descrição seja exibida
 
-        # Adicionar uma mensagem de depuração para garantir que o fluxo esteja funcionando
-        st.write("Descrição da imagem foi gerada e deve aparecer acima.")
+        # Adicionar mais mensagens de depuração
+        st.write("Descrição da imagem foi gerada e exibida.")
         
         # Iniciar conversa
         user_input = st.text_input("Faça uma pergunta sobre a imagem:")
