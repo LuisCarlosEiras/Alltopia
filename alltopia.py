@@ -75,10 +75,14 @@ if image:
     
     # Codificar a imagem
     encoded_image = encode_image(rgb_image)
+    
+    # Exibir o prompt de entrada para depuração
+    prompt_input = f"Descreva esta imagem: data:image/jpeg;base64,{encoded_image}"
+    st.write(f"Prompt de entrada: {prompt_input}")
 
     # Obter descrição da imagem com retry
     def get_image_description():
-        return llm_chain2.run(input=f"Descreva esta imagem: data:image/jpeg;base64,{encoded_image}")
+        return llm_chain2.run(input=prompt_input)
     
     image_description = retry_with_exponential_backoff(get_image_description)
     
