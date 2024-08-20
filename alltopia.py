@@ -17,10 +17,16 @@ st.set_page_config(page_title="Assistente de Visão", layout="wide")
 # Configuração da chave API do Groq
 os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
 
-# Função para codificar a imagem em base64
-def encode_image(image):
+# Função para redimensionar a imagem
+def resize_image(image, max_size=(512, 512)):
+    image = image.copy()
+    image.thumbnail(max_size)
+    return image
+
+# Função para codificar a imagem em base64 (com compactação JPEG)
+def encode_image(image, format="JPEG", quality=85):
     buffered = io.BytesIO()
-    image.save(buffered, format="PNG")
+    image.save(buffered, format=format, quality=quality)
     return base64.b64encode(buffered.getvalue()).decode()
 
 # Função para realizar retry com backoff exponencial
@@ -35,23 +41,19 @@ def retry_with_exponential_backoff(func, max_retries=5, base_delay=1, max_delay=
             st.warning(f"Erro ao chamar a API. Tentando novamente em {delay:.2f} segundos...")
             time.sleep(delay)
 
-# Configuração do LLM
-template = open("templates/vision_assistant.md", "r").read()
-prompt = PromptTemplate(input_variables=["input", "image_description"],
-                        template=template)
-llm = ChatGroq(temperature=0, model_name="llama3-70b-8192")
-memory = ConversationBufferMemory(memory_key="chat_history",
-                                  input_key="input")
-llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
-
-# Configuração do LLM Prompter
+# Configuração do LLM para descrição de imagens
 template2 = open("templates/vision_prompter.md", "r").read()
-prompt2 = PromptTemplate(input_variables=["input"],
-                         template=template2)
+prompt2 = PromptTemplate(input_variables=["input"], template=template2)
 llm2 = ChatGroq(temperature=0, model_name="llama3-8b-8192")
-memory2 = ConversationBufferMemory(memory_key="chat_history",
-                                   input_key="input")
+memory2 = ConversationBufferMemory(memory_key="chat_history", input_key="input")
 llm_chain2 = LLMChain(llm=llm2, prompt=prompt2, memory=memory2)
+
+# Configuração do LLM para perguntas sobre a imagem
+template = open("templates/vision_assistant.md", "r").read()
+prompt = PromptTemplate(input_variables=["input", "image_description"], template=template)
+llm = ChatGroq(temperature=0, model_name="llama3-70b-8192")
+memory = ConversationBufferMemory(memory_key="chat_history", input_key="input")
+llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
 
 # Interface do Streamlit
 st.title("Assistente de Visão")
@@ -61,12 +63,13 @@ image = camera_input_live()
 if image:
     st.image(image)
     
-    # Codificar a imagem em base64
-    encoded_image = encode_image(Image.open(io.BytesIO(image.getvalue())))
-    
+    # Redimensionar e codificar a imagem
+    resized_image = resize_image(Image.open(io.BytesIO(image.getvalue())))
+    encoded_image = encode_image(resized_image)
+
     # Obter descrição da imagem com retry
     def get_image_description():
-        return llm_chain2.run(input=f"Descreva esta imagem: data:image/png;base64,{encoded_image}")
+        return llm_chain2.run(input=f"Descreva esta imagem: data:image/jpeg;base64,{encoded_image}")
     
     image_description = retry_with_exponential_backoff(get_image_description)
     
