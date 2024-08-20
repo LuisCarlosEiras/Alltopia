@@ -66,29 +66,26 @@ if image:
     resized_image = resize_image(Image.open(io.BytesIO(image.getvalue())))
     rgb_image = convert_rgba_to_rgb(resized_image)
     
-    if st.button("Descrever Imagem"):
-        # Codificar a imagem para base64
-        encoded_image = encode_image(rgb_image)
+    # Codificar a imagem para base64
+    encoded_image = encode_image(rgb_image)
+    
+    # Simulação de descrição de imagem
+    image_description = "Imagem processada com sucesso. Esta é uma descrição de exemplo."
+    
+    # Exibir a descrição da imagem
+    st.write("Descrição da imagem:")
+    st.write(image_description)
+    
+    # Iniciar conversa
+    user_input = st.text_input("Faça uma pergunta sobre a imagem:")
+    if user_input:
+        # Responder à pergunta do usuário com retry
+        def get_response():
+            return llm_chain.run(input=user_input, image_description=image_description)
         
-        # Simulação de descrição de imagem
-        image_description = "Imagem processada com sucesso. Esta é uma descrição de exemplo."
-        
-        st.write("Descrição da imagem:")
-        st.write(image_description)  # Certifique-se de que a descrição seja exibida
-
-        # Adicionar mais mensagens de depuração
-        st.write("Descrição da imagem foi gerada e exibida.")
-        
-        # Iniciar conversa
-        user_input = st.text_input("Faça uma pergunta sobre a imagem:")
-        if user_input:
-            # Responder à pergunta do usuário com retry
-            def get_response():
-                return llm_chain.run(input=user_input, image_description=image_description)
-            
-            response = retry_with_exponential_backoff(get_response)
-            st.write("Resposta:")
-            st.write(response)
+        response = retry_with_exponential_backoff(get_response)
+        st.write("Resposta:")
+        st.write(response)
 
 # Exibir histórico da conversa
 if st.button("Mostrar histórico da conversa"):
