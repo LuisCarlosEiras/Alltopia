@@ -1,5 +1,5 @@
 import streamlit as st
-from camera_input_live import camera_input_live
+from streamlit_camera_input_live import camera_input_live
 from PIL import Image
 import io
 import base64
@@ -8,6 +8,8 @@ from langchain_groq import ChatGroq
 from langchain.chains import LLMChain
 from langchain.memory import ConversationBufferMemory
 import os
+import time
+import random
 
 # Configuração da página Streamlit
 st.set_page_config(page_title="Assistente de Visão", layout="wide")
@@ -20,6 +22,18 @@ def encode_image(image):
     buffered = io.BytesIO()
     image.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode()
+
+# Função para realizar retry com backoff exponencial
+def retry_with_exponential_backoff(func, max_retries=5, base_delay=1, max_delay=60):
+    for attempt in range(max_retries):
+        try:
+            return func()
+        except Exception as e:
+            if attempt == max_retries - 1:
+                raise e
+            delay = min(base_delay * (2 ** attempt) + random.uniform(0, 1), max_delay)
+            st.warning(f"Erro ao chamar a API. Tentando novamente em {delay:.2f} segundos...")
+            time.sleep(delay)
 
 # Configuração do LLM
 template = open("templates/vision_assistant.md", "r").read()
@@ -50,8 +64,11 @@ if image:
     # Codificar a imagem em base64
     encoded_image = encode_image(Image.open(io.BytesIO(image.getvalue())))
     
-    # Obter descrição da imagem
-    image_description = llm_chain2.run(input=f"Descreva esta imagem: data:image/png;base64,{encoded_image}")
+    # Obter descrição da imagem com retry
+    def get_image_description():
+        return llm_chain2.run(input=f"Descreva esta imagem: data:image/png;base64,{encoded_image}")
+    
+    image_description = retry_with_exponential_backoff(get_image_description)
     
     st.write("Descrição da imagem:")
     st.write(image_description)
@@ -59,7 +76,11 @@ if image:
     # Iniciar conversa
     user_input = st.text_input("Faça uma pergunta sobre a imagem:")
     if user_input:
-        response = llm_chain.run(input=user_input, image_description=image_description)
+        # Responder à pergunta do usuário com retry
+        def get_response():
+            return llm_chain.run(input=user_input, image_description=image_description)
+        
+        response = retry_with_exponential_backoff(get_response)
         st.write("Resposta:")
         st.write(response)
 
