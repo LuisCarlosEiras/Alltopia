@@ -47,20 +47,6 @@ def retry_with_exponential_backoff(func, max_retries=5, base_delay=1, max_delay=
             st.warning(f"Erro ao chamar a API. Tentando novamente em {delay:.2f} segundos...")
             time.sleep(delay)
 
-# Configuração do LLM para descrição de imagens
-template2 = open("templates/vision_prompter.md", "r").read()
-prompt2 = PromptTemplate(input_variables=["input"], template=template2)
-llm2 = ChatGroq(temperature=0, model_name="llama3-8b-8192")
-memory2 = ConversationBufferMemory(memory_key="chat_history", input_key="input")
-llm_chain2 = LLMChain(llm=llm2, prompt=prompt2, memory=memory2)
-
-# Configuração do LLM para perguntas sobre a imagem
-template = open("templates/vision_assistant.md", "r").read()
-prompt = PromptTemplate(input_variables=["input", "image_description"], template=template)
-llm = ChatGroq(temperature=0, model_name="llama3-70b-8192")
-memory = ConversationBufferMemory(memory_key="chat_history", input_key="input")
-llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
-
 # Interface do Streamlit
 st.title("Assistente de Visão")
 
@@ -73,20 +59,9 @@ if image:
     resized_image = resize_image(Image.open(io.BytesIO(image.getvalue())))
     rgb_image = convert_rgba_to_rgb(resized_image)
     
-    # Codificar a imagem
-    encoded_image = encode_image(rgb_image)
-    
-    # Limitar o tamanho da base64 para depuração
-    prompt_input = f"Descreva esta imagem: data:image/jpeg;base64,{encoded_image[:2000]}"
-
-    # Exibir o prompt de entrada para depuração
-    st.write(f"Prompt de entrada: {prompt_input}")
-
-    # Obter descrição da imagem com retry
-    def get_image_description():
-        return llm_chain2.run(input=prompt_input)
-    
-    image_description = retry_with_exponential_backoff(get_image_description)
+    # Aqui você deveria enviar a imagem para um modelo de visão computacional
+    # para obter a descrição, em vez de incluir a imagem no prompt do modelo de linguagem.
+    image_description = "Descrição gerada pelo modelo de visão"  # Substitua por sua chamada ao modelo de visão
     
     st.write("Descrição da imagem:")
     st.write(image_description)
@@ -94,6 +69,13 @@ if image:
     # Iniciar conversa
     user_input = st.text_input("Faça uma pergunta sobre a imagem:")
     if user_input:
+        # Configuração do LLM para perguntas sobre a imagem
+        template = open("templates/vision_assistant.md", "r").read()
+        prompt = PromptTemplate(input_variables=["input", "image_description"], template=template)
+        llm = ChatGroq(temperature=0, model_name="llama3-70b-8192")
+        memory = ConversationBufferMemory(memory_key="chat_history", input_key="input")
+        llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
+        
         # Responder à pergunta do usuário com retry
         def get_response():
             return llm_chain.run(input=user_input, image_description=image_description)
