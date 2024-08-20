@@ -49,7 +49,7 @@ def retry_with_exponential_backoff(func, max_retries=5, base_delay=1, max_delay=
 
 # Configuração do LLM e da memória para a conversa
 template = open("templates/vision_assistant.md", "r").read()
-prompt = PromptTemplate(input_variables=["input", "image_description"], template=template)
+prompt = PromptTemplate(input_variables=["input", "image"], template=template)
 llm = ChatGroq(temperature=0, model_name="llama3-70b-8192")
 memory = ConversationBufferMemory(memory_key="chat_history", input_key="input")
 llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
@@ -69,11 +69,13 @@ if image:
     # Codificar a imagem para base64
     encoded_image = encode_image(rgb_image)
     
-    # Simulação de descrição de imagem
-    image_description = "Imagem processada com sucesso. Esta é uma descrição de exemplo."
-    
-    # Adicionar o botão para gerar a descrição da imagem
     if st.button("Descrever Imagem"):
+        # Gerar a descrição da imagem usando o modelo LLM
+        def get_image_description():
+            return llm_chain.run(input="Descreva essa imagem em detalhes.", image=encoded_image)
+        
+        image_description = retry_with_exponential_backoff(get_image_description)
+        
         # Exibir a descrição da imagem
         st.write("Descrição da imagem:")
         st.write(image_description)
@@ -83,7 +85,7 @@ if image:
         if user_input:
             # Responder à pergunta do usuário com retry
             def get_response():
-                return llm_chain.run(input=user_input, image_description=image_description)
+                return llm_chain.run(input=user_input, image=encoded_image)
             
             response = retry_with_exponential_backoff(get_response)
             st.write("Resposta:")
