@@ -72,10 +72,6 @@ if image:
     # Simulação de descrição de imagem
     image_description = "Imagem processada com sucesso. Esta é uma descrição de exemplo."
     
-    # Exibir a descrição da imagem
-    st.write("Descrição da imagem:")
-    st.write(image_description)
-    
     # Adicionar o botão para gerar a descrição da imagem
     if st.button("Descrever Imagem"):
         # Exibir a descrição da imagem
