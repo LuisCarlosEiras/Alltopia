@@ -71,12 +71,14 @@ if image:
         encoded_image = encode_image(rgb_image)
         
         # Aqui você deveria enviar a imagem para um modelo de visão computacional
-        # para obter a descrição, em vez de incluir a imagem no prompt do modelo de linguagem.
-        # Exemplo fictício de descrição:
-        image_description = "Descrição gerada pelo modelo de visão"  # Substitua pela chamada ao modelo de visão real
+        # para obter a descrição. Vamos simular uma descrição de imagem:
+        image_description = "Imagem processada com sucesso. Esta é uma descrição de exemplo."
         
         st.write("Descrição da imagem:")
-        st.write(image_description)
+        st.write(image_description)  # Certifique-se de que a descrição seja exibida
+
+        # Adicionar uma mensagem de depuração para garantir que o fluxo esteja funcionando
+        st.write("Descrição da imagem foi gerada e deve aparecer acima.")
         
         # Iniciar conversa
         user_input = st.text_input("Faça uma pergunta sobre a imagem:")
