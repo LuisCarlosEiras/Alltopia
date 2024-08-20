@@ -3,8 +3,8 @@ from camera_input_live import camera_input_live
 from PIL import Image
 import io
 import base64
-from langchain.prompts import PromptTemplate
-from langchain.llms import ChatGroq
+from langchain_core.prompts import PromptTemplate
+from langchain_groq import ChatGroq
 from langchain.chains import LLMChain
 from langchain.memory import ConversationBufferMemory
 import os
