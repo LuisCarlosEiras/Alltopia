@@ -47,6 +47,13 @@ def retry_with_exponential_backoff(func, max_retries=5, base_delay=1, max_delay=
             st.warning(f"Erro ao chamar a API. Tentando novamente em {delay:.2f} segundos...")
             time.sleep(delay)
 
+# Configuração do LLM e da memória para a conversa
+template = open("templates/vision_assistant.md", "r").read()
+prompt = PromptTemplate(input_variables=["input", "image_description"], template=template)
+llm = ChatGroq(temperature=0, model_name="llama3-70b-8192")
+memory = ConversationBufferMemory(memory_key="chat_history", input_key="input")
+llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
+
 # Interface do Streamlit
 st.title("Assistente de Visão")
 
@@ -74,13 +81,6 @@ if image:
         # Iniciar conversa
         user_input = st.text_input("Faça uma pergunta sobre a imagem:")
         if user_input:
-            # Configuração do LLM para perguntas sobre a imagem
-            template = open("templates/vision_assistant.md", "r").read()
-            prompt = PromptTemplate(input_variables=["input", "image_description"], template=template)
-            llm = ChatGroq(temperature=0, model_name="llama3-70b-8192")
-            memory = ConversationBufferMemory(memory_key="chat_history", input_key="input")
-            llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
-            
             # Responder à pergunta do usuário com retry
             def get_response():
                 return llm_chain.run(input=user_input, image_description=image_description)
