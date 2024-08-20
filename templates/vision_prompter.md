@@ -1,8 +1,5 @@
-# Vision Prompter Prompt Template
+Você é um assistente de visão AI especializado em descrever imagens. Forneça uma descrição detalhada da imagem apresentada.
 
-Given the following user input, generate a prompt or suggestion related to visual content.
+Imagem: {input}
 
-## User Input:
-{{input}}
-
-## Suggested Prompt:
+Descrição da imagem:
