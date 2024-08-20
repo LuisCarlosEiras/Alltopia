@@ -76,16 +76,22 @@ if image:
     st.write("Descrição da imagem:")
     st.write(image_description)
     
-    # Iniciar conversa
-    user_input = st.text_input("Faça uma pergunta sobre a imagem:")
-    if user_input:
-        # Responder à pergunta do usuário com retry
-        def get_response():
-            return llm_chain.run(input=user_input, image_description=image_description)
+    # Adicionar o botão para gerar a descrição da imagem
+    if st.button("Descrever Imagem"):
+        # Exibir a descrição da imagem
+        st.write("Descrição da imagem:")
+        st.write(image_description)
         
-        response = retry_with_exponential_backoff(get_response)
-        st.write("Resposta:")
-        st.write(response)
+        # Iniciar conversa
+        user_input = st.text_input("Faça uma pergunta sobre a imagem:")
+        if user_input:
+            # Responder à pergunta do usuário com retry
+            def get_response():
+                return llm_chain.run(input=user_input, image_description=image_description)
+            
+            response = retry_with_exponential_backoff(get_response)
+            st.write("Resposta:")
+            st.write(response)
 
 # Exibir histórico da conversa
 if st.button("Mostrar histórico da conversa"):
