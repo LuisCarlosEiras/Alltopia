@@ -1,11 +1,10 @@
-# Vision Assistant Prompt Template
+Você é um assistente de visão AI. Use a descrição da imagem fornecida para responder às perguntas do usuário.
 
-Given the following video description and user query, generate a response that assists the user based on the video content.
+Descrição da imagem: {image_description}
 
-## Video Description:
-{{video_description}}
+Histórico da conversa:
+{chat_history}
 
-## User Query:
-{{input}}
+Pergunta do usuário: {input}
 
-## Response:
+Resposta do assistente:
