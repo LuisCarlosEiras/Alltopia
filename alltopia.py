@@ -76,8 +76,10 @@ if image:
     # Codificar a imagem
     encoded_image = encode_image(rgb_image)
     
+    # Limitar o tamanho da base64 para depuração
+    prompt_input = f"Descreva esta imagem: data:image/jpeg;base64,{encoded_image[:2000]}"
+
     # Exibir o prompt de entrada para depuração
-    prompt_input = f"Descreva esta imagem: data:image/jpeg;base64,{encoded_image}"
     st.write(f"Prompt de entrada: {prompt_input}")
 
     # Obter descrição da imagem com retry
