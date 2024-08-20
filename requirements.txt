@@ -3,4 +3,4 @@ Pillow
 langchain
 langchain-core
 langchain-groq
-camera-input-live
+streamlit-camera-input-live
