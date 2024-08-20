@@ -23,6 +23,12 @@ def resize_image(image, max_size=(512, 512)):
     image.thumbnail(max_size)
     return image
 
+# Função para converter imagem de RGBA para RGB
+def convert_rgba_to_rgb(image):
+    if image.mode == 'RGBA':
+        return image.convert('RGB')
+    return image
+
 # Função para codificar a imagem em base64 (com compactação JPEG)
 def encode_image(image, format="JPEG", quality=85):
     buffered = io.BytesIO()
@@ -63,9 +69,12 @@ image = camera_input_live()
 if image:
     st.image(image)
     
-    # Redimensionar e codificar a imagem
+    # Redimensionar e converter a imagem para RGB
     resized_image = resize_image(Image.open(io.BytesIO(image.getvalue())))
-    encoded_image = encode_image(resized_image)
+    rgb_image = convert_rgba_to_rgb(resized_image)
+    
+    # Codificar a imagem
+    encoded_image = encode_image(rgb_image)
 
     # Obter descrição da imagem com retry
     def get_image_description():
