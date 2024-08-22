@@ -17,9 +17,9 @@ if image_data is not None:
     # Exibe a imagem capturada
     st.image(image, caption="Imagem Capturada", use_column_width=True)
     
-    # Exibe informações adicionais da imagem (opcional)
+    # Exibe informações adicionais da imagem
     st.write(f"Tipo da imagem capturada: {type(image)}")
-    st.write(f"Dimensões da imagem: {image.size}")  # Agora acessamos as dimensões da imagem PIL
+    st.write(f"Dimensões da imagem: {image.size}")  # Acesso às dimensões após conversão para PIL Image
     
     # Se a imagem for capturada, você pode prosseguir para enviar a imagem para a API Groq
     if st.button("Enviar Imagem para Groq API"):
