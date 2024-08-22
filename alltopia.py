@@ -1,97 +1,67 @@
 import streamlit as st
-from camera_input_live import camera_input_live
-from PIL import Image
-import io
-import base64
-from langchain_core.prompts import PromptTemplate
-from langchain_groq import ChatGroq
-from langchain.chains import LLMChain
-from langchain.memory import ConversationBufferMemory
-import os
-import time
-import random
+import cv2
+import requests
+import numpy as np
 
-# Configuração da página Streamlit
-st.set_page_config(page_title="Assistente de Visão", layout="wide")
+# Configuração da chave da API do Groq
+groq_api_key = st.secrets["groq"]["api_key"]
 
-# Configuração da chave API do Groq
-os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+# Função para capturar imagem da câmera
+def capture_image():
+    # Inicializa a captura de vídeo
+    cap = cv2.VideoCapture(0)
 
-# Função para redimensionar a imagem
-def resize_image(image, max_size=(512, 512)):
-    image = image.copy()
-    image.thumbnail(max_size)
-    return image
+    if not cap.isOpened():
+        st.error("Não foi possível acessar a câmera.")
+        return None
 
-# Função para converter imagem de RGBA para RGB
-def convert_rgba_to_rgb(image):
-    if image.mode == 'RGBA':
-        return image.convert('RGB')
-    return image
+    # Captura um frame
+    ret, frame = cap.read()
 
-# Função para codificar a imagem em base64 (com compactação JPEG)
-def encode_image(image, format="JPEG", quality=85):
-    buffered = io.BytesIO()
-    image.save(buffered, format=format, quality=quality)
-    return base64.b64encode(buffered.getvalue()).decode()
+    # Libera a captura de vídeo
+    cap.release()
 
-# Função para realizar retry com backoff exponencial
-def retry_with_exponential_backoff(func, max_retries=5, base_delay=1, max_delay=60):
-    for attempt in range(max_retries):
-        try:
-            return func()
-        except Exception as e:
-            if attempt == max_retries - 1:
-                raise e
-            delay = min(base_delay * (2 ** attempt) + random.uniform(0, 1), max_delay)
-            st.warning(f"Erro ao chamar a API. Tentando novamente em {delay:.2f} segundos...")
-            time.sleep(delay)
+    if not ret:
+        st.error("Não foi possível capturar a imagem.")
+        return None
 
-# Configuração do LLM e da memória para a conversa
-template = open("templates/vision_assistant.md", "r").read()
-prompt = PromptTemplate(input_variables=["input"], template=template)
-llm = ChatGroq(temperature=0, model_name="llama3-70b-8192")
-memory = ConversationBufferMemory(memory_key="chat_history", input_key="input")
-llm_chain = LLMChain(llm=llm, prompt=prompt, memory=memory)
+    return frame
+
+# Função para exibir a imagem no Streamlit
+def display_image(image):
+    st.image(image, channels="BGR")
+
+# Função para enviar a imagem ao Groq API
+def send_image_to_groq(image):
+    st.write("Enviando imagem para Groq API...")
+
+    # Converte a imagem para bytes
+    _, img_encoded = cv2.imencode('.jpg', image)
+    files = {'file': img_encoded.tobytes()}
+
+    # Realiza a chamada à API do Groq
+    response = requests.post(
+        url="https://api.groq.com/v1/your-endpoint",  # Substitua pelo endpoint correto da API
+        headers={"Authorization": f"Bearer {groq_api_key}"},
+        files=files
+    )
+
+    # Verifica se a chamada foi bem-sucedida
+    if response.status_code == 200:
+        st.write("Imagem enviada com sucesso!")
+        st.json(response.json())  # Exibe a resposta da API
+    else:
+        st.error(f"Erro ao enviar imagem: {response.status_code}")
+        st.error(response.text)
 
 # Interface do Streamlit
-st.title("Assistente de Visão")
+st.title("Captura de Imagens com Streamlit e OpenCV")
 
-# Captura de imagem
-image = camera_input_live()
-if image:
-    st.image(image)
-    
-    # Redimensionar e converter a imagem para RGB
-    resized_image = resize_image(Image.open(io.BytesIO(image.getvalue())))
-    rgb_image = convert_rgba_to_rgb(resized_image)
-    
-    # Codificar a imagem para base64
-    encoded_image = encode_image(rgb_image)
-    
-    if st.button("Descrever Imagem"):
-        # Gerar a descrição da imagem usando o modelo LLM
-        description_input = f"Descreva a imagem: {encoded_image}"
-        def get_image_description():
-            return llm_chain.run(input=description_input)
-        
-        image_description = retry_with_exponential_backoff(get_image_description)
-        
-        # Exibir a descrição da imagem
-        st.write("Descrição da imagem:")
-        st.write(image_description)
-        
-        # Iniciar conversa
-        user_input = st.text_input("Faça uma pergunta sobre a imagem:")
-        if user_input:
-            # Responder à pergunta do usuário com retry
-            def get_response():
-                return llm_chain.run(input=user_input)
-            
-            response = retry_with_exponential_backoff(get_response)
-            st.write("Resposta:")
-            st.write(response)
+if st.button("Capturar Imagem"):
+    image = capture_image()
+    if image is not None:
+        st.write("Imagem capturada:")
+        display_image(image)
 
-# Exibir histórico da conversa
-if st.button("Mostrar histórico da conversa"):
-    st.write(memory.chat_memory.messages)
+        if st.button("Enviar Imagem para Groq API"):
+            send_image_to_groq(image)
