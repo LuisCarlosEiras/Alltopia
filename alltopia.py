@@ -1,29 +1,27 @@
 import streamlit as st
-import cv2
+from streamlit_camera_input import camera_input
 
-def capture_image():
-    cap = cv2.VideoCapture(0)  # Experimente alterar o índice para 1, 2, etc.
-
-    if not cap.isOpened():
-        st.error("Não foi possível acessar a câmera.")
-        return None
-
-    ret, frame = cap.read()
-
-    cap.release()
-
-    if not ret:
-        st.error("Não foi possível capturar a imagem.")
-        return None
-
-    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    return frame_rgb
-
-st.title("Captura de Imagens com Streamlit e OpenCV")
-
-if st.button("Capturar Imagem"):
-    image = capture_image()
-    if image is not None:
-        st.image(image, caption="Imagem Capturada", use_column_width=True)
+# Função para exibir e processar a imagem capturada
+def process_and_display_image(image_data):
+    if image_data:
+        # Converte a imagem capturada para um formato compatível
+        img = image_data.to_image()
+        st.image(img, caption="Imagem Capturada", use_column_width=True)
+        return img
     else:
-        st.error("Imagem não foi capturada. Verifique a câmera e tente novamente.")
+        st.error("Nenhuma imagem capturada.")
+        return None
+
+# Interface do Streamlit
+st.title("Captura de Imagens com Streamlit")
+
+# Captura de imagem com streamlit-camera-input-live
+image_data = camera_input(label="Tire uma foto com a câmera")
+
+# Processamento da imagem capturada
+captured_image = process_and_display_image(image_data)
+
+# Se a imagem for capturada, você pode prosseguir para enviar a imagem para a API Groq
+if captured_image:
+    if st.button("Enviar Imagem para Groq API"):
+        st.write("A implementação do envio da imagem para a API Groq seria adicionada aqui.")
