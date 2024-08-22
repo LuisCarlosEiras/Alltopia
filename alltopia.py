@@ -1,5 +1,5 @@
 import streamlit as st
-from streamlit_camera_input import camera_input
+from camera_input_live import camera_input_live
 
 # Função para exibir e processar a imagem capturada
 def process_and_display_image(image_data):
@@ -16,7 +16,7 @@ def process_and_display_image(image_data):
 st.title("Captura de Imagens com Streamlit")
 
 # Captura de imagem com streamlit-camera-input-live
-image_data = camera_input(label="Tire uma foto com a câmera")
+image_data = camera_input_live(label="Tire uma foto com a câmera")
 
 # Processamento da imagem capturada
 captured_image = process_and_display_image(image_data)
