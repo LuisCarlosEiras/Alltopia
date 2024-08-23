@@ -17,7 +17,7 @@ if image:
     st.image(image)
     
     # Converte o arquivo BytesIO para uma imagem PIL
-    img = Image.open(io.BytesIO(image.read()))
+    img = Image.open(io.BytesIO(image.getvalue()))
 
     # Exibe informações da imagem
     st.write(f"Formato: {img.format}")
@@ -34,7 +34,7 @@ if image:
         }
         
         # Envia a imagem como bytes
-        response = requests.post(url, headers=headers, data=io.BytesIO(image.read()))
+        response = requests.post(url, headers=headers, data=image.getvalue())
         
         # Verifica a resposta da API
         if response.status_code == 200:
