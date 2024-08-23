@@ -2,6 +2,7 @@ import streamlit as st
 from camera_input_live import camera_input_live
 from PIL import Image
 import io
+import requests
 
 st.title("Captura de Imagens com Streamlit")
 
@@ -22,4 +23,24 @@ if image:
     
     # Botão para enviar a imagem para a API Groq
     if st.button("Enviar Imagem para Groq API"):
-        st.write("Implementação do envio da imagem para a API Groq será adicionada aqui.")
+        token = st.secrets["groq_api"]["token"]
+        
+        # Prepare a requisição
+        url = "https://api.groq.com/v1/your-endpoint"  # substitua com o endpoint correto
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/octet-stream"
+        }
+        
+        # Envia a imagem como bytes
+        response = requests.post(url, headers=headers, data=io.BytesIO(image.read()))
+        
+        # Verifica a resposta da API
+        if response.status_code == 200:
+            st.success("Imagem enviada com sucesso para a API Groq!")
+            st.json(response.json())  # Exibe a resposta da API
+        else:
+            st.error(f"Falha ao enviar a imagem. Status code: {response.status_code}")
+            st.write(response.text)
+else:
+    st.error("Nenhuma imagem capturada.")
