@@ -3,6 +3,7 @@ from camera_input_live import camera_input_live
 from PIL import Image
 import io
 import requests
+from groq_client import Groq
 
 # Inicializar o cliente Groq
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
