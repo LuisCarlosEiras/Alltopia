@@ -2,7 +2,6 @@ import streamlit as st
 from camera_input_live import camera_input_live
 from PIL import Image
 import io
-import base64
 from groq import Groq
 
 # Configuração da chave API (Token)
@@ -10,19 +9,13 @@ groq_api_key = st.secrets["GROQ_API_KEY"]
 
 client = Groq(api_key=groq_api_key)
 
-def encode_image(image_file):
-    return base64.b64encode(image_file.getvalue()).decode('utf-8')
-
-def run_groq_query(input_text, image_base64):
+def run_groq_query(input_text):
     messages = [
-        {"role": "system", "content": "You are a helpful assistant capable of analyzing images."},
-        {"role": "user", "content": [
-            {"type": "text", "text": input_text},
-            {"type": "image_url", "image_url": f"data:image/jpeg;base64,{image_base64}"}
-        ]}
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": input_text}
     ]
     response = client.chat.completions.create(
-        model="gpt-4-vision-preview",  # Certifique-se de que a Groq suporta este modelo
+        model="llama3-70b-8192",  # ou outro modelo suportado pela Groq
         messages=messages,
         max_tokens=300
     )
@@ -45,15 +38,20 @@ if image:
     st.write(f"Dimensões: {img.size}")
     st.write(f"Modo: {img.mode}")
     
-    # Botão para enviar a imagem para a API Groq
-    if st.button("Enviar Imagem para Groq API"):
-        # Codifica a imagem em base64
-        image_base64 = encode_image(image)
+    # Botão para enviar a descrição para a API Groq
+    if st.button("Enviar Descrição para Groq API"):
+        # Aqui, em vez de enviar a imagem, vamos apenas descrever o que foi capturado
+        input_text = """
+        Uma imagem foi capturada usando a câmera. 
+        Formato da imagem: {format}
+        Dimensões: {width}x{height}
+        Modo de cor: {mode}
         
-        input_text = "Descreva detalhadamente a imagem capturada."
+        Por favor, forneça algumas sugestões sobre como poderíamos analisar ou utilizar esta imagem em uma aplicação.
+        """.format(format=img.format, width=img.width, height=img.height, mode=img.mode)
         
-        # Executando a query Groq com a entrada e a imagem
-        response = run_groq_query(input_text, image_base64)
+        # Executando a query Groq com a entrada
+        response = run_groq_query(input_text)
         
         st.write("Resposta da API Groq:")
         st.write(response)
