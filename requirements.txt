@@ -2,7 +2,7 @@ streamlit
 Pillow
 requests
 streamlit-camera-input-live
-# groq-client
+langchain-groq
 openai
 langchain==0.0.208
 groq
