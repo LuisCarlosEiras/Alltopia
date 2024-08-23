@@ -4,5 +4,5 @@ requests
 streamlit-camera-input-live
 langchain-groq
 openai
-langchain==0.0.208
+langchain
 groq
