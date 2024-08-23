@@ -2,28 +2,29 @@ import streamlit as st
 from camera_input_live import camera_input_live
 from PIL import Image
 import io
-from langchain.prompts import PromptTemplate
+import base64
 from groq import Groq
 
 # Configuração da chave API (Token)
-groq_api_key = st.secrets["GROQ_API_KEY"]  # Chave armazenada no secrets do Streamlit
-
-# Configuração do modelo LLM
-template = open("templates/vision_assistant.md", "r").read()
-prompt = PromptTemplate(input_variables=["input", "video_description"],
-                        template=template)
+groq_api_key = st.secrets["GROQ_API_KEY"]
 
 client = Groq(api_key=groq_api_key)
 
-def run_groq_query(input_text, video_description):
+def encode_image(image_file):
+    return base64.b64encode(image_file.getvalue()).decode('utf-8')
+
+def run_groq_query(input_text, image_base64):
     messages = [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": prompt.format(input=input_text, video_description=video_description)}
+        {"role": "system", "content": "You are a helpful assistant capable of analyzing images."},
+        {"role": "user", "content": [
+            {"type": "text", "text": input_text},
+            {"type": "image_url", "image_url": f"data:image/jpeg;base64,{image_base64}"}
+        ]}
     ]
     response = client.chat.completions.create(
-        model="llama3-70b-8192",
+        model="gpt-4-vision-preview",  # Certifique-se de que a Groq suporta este modelo
         messages=messages,
-        temperature=0
+        max_tokens=300
     )
     return response.choices[0].message.content
 
@@ -38,7 +39,7 @@ if image:
     st.image(image)
     
     # Converte o arquivo BytesIO para uma imagem PIL
-    img = Image.open(io.BytesIO(image.read()))
+    img = Image.open(io.BytesIO(image.getvalue()))
     # Exibe informações da imagem
     st.write(f"Formato: {img.format}")
     st.write(f"Dimensões: {img.size}")
@@ -46,12 +47,13 @@ if image:
     
     # Botão para enviar a imagem para a API Groq
     if st.button("Enviar Imagem para Groq API"):
-        # Exemplo de processamento da imagem e envio para o modelo LLM via API Groq
-        video_description = "Descrição gerada pelo modelo"  # Placeholder para uma possível descrição gerada
-        input_text = "Descreva a imagem capturada"
+        # Codifica a imagem em base64
+        image_base64 = encode_image(image)
         
-        # Executando a query Groq com a entrada e a descrição do vídeo
-        response = run_groq_query(input_text, video_description)
+        input_text = "Descreva detalhadamente a imagem capturada."
+        
+        # Executando a query Groq com a entrada e a imagem
+        response = run_groq_query(input_text, image_base64)
         
         st.write("Resposta da API Groq:")
         st.write(response)
