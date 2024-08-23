@@ -1,5 +1,5 @@
-streamlit #==1.24.1
-streamlit-camera-input-live #==0.1.3
+streamlit
 Pillow
-Groq
-
+requests
+streamlit-camera-input-live
+groq-client
