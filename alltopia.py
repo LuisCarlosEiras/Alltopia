@@ -26,7 +26,7 @@ if image:
         token = st.secrets["groq_api"]["token"]
         
         # Prepare a requisição
-        url = "https://api.groq.com/v1/your-endpoint"  # substitua com o endpoint correto
+        url = "https://api.groq.com/v1/images/describe"  # substitua com o endpoint correto
         headers = {
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/octet-stream"
