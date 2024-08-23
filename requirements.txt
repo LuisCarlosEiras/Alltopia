@@ -2,7 +2,7 @@ streamlit
 Pillow
 requests
 streamlit-camera-input-live
-langchain-groq
+langchain-core
 openai
 langchain
 groq
