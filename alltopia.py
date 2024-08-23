@@ -28,7 +28,7 @@ if image:
     # Botão para enviar a imagem para a API Groq
     if st.button("Enviar Imagem para Groq API"):
         # Prepare a requisição
-        url = "https://api.groq.com/v1/your-endpoint"  # substitua com o endpoint correto
+        url = "https://api.groq.com/v1/image-analysis" # substitua com o endpoint correto
         headers = {
             "Authorization": f"Bearer {client.api_key}",
             "Content-Type": "application/octet-stream"
